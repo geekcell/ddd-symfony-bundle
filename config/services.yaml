@@ -1,0 +1,7 @@
+services:
+    geek_cell_ddd.facade_setup_subscriber:
+        class: GeekCell\DDDBundle\EventSubscriber\FacadeSetupSubscriber
+        arguments:
+            - '@kernel'
+        tags:
+            - { name: kernel.event_subscriber }

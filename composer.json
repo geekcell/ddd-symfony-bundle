@@ -1,0 +1,41 @@
+{
+    "name": "geekcell/ddd-bundle",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Pascal Cremer",
+            "email": "pascal.cremer@geekcell.io"
+        }
+    ],
+    "require": {
+        "symfony/http-kernel": "^6.2",
+        "symfony/event-dispatcher": "^6.2",
+        "symfony/dependency-injection": "^6.2",
+        "symfony/config": "^6.2",
+        "beberlei/assert": "^3.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "GeekCell\\DDDBundle\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "GeekCell\\DDDBundle\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.5",
+        "phpunit/phpunit": "^9.5",
+        "phpstan/phpstan": "^1.9",
+        "friendsofphp/php-cs-fixer": "^3.13",
+        "phpstan/phpstan-mockery": "^1.1"
+    },
+    "scripts": {
+        "gc:tests": "phpunit --testdox --colors=always",
+        "gc:cs-lint": "php-cs-fixer fix --config .php-cs-fixer.php --diff -vvv --dry-run",
+        "gc:cs-fix": "php-cs-fixer fix --config .php-cs-fixer.php -vvv || true",
+        "gc:phpstan": "phpstan analyse --memory-limit=2G --no-progress --level=8"
+    }
+}
