@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.0.1...v1.0.2) (2023-01-09)
+
+
+### Miscellaneous Chores
+
+* release 1.0.2 ([4c98116](https://github.com/geekcell/ddd-symfony-bundle/commit/4c9811648de2b659a1518bcc3b9118aba4341dbe))
+
 ## [1.0.1](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.0.0...v1.0.1) (2023-01-09)
 
 
