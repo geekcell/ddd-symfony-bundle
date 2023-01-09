@@ -6,7 +6,7 @@ namespace GeekCell\DDDBundle;
 
 use GeekCell\DDDBundle\DependencyInjection\GeekCellDDDExtension;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * Class GeekCellDDDBundle.
@@ -15,8 +15,7 @@ use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
  * @package GeekCell\DDDBundle
  * @codeCoverageIgnore
  */
-
-class GeekCellDDDBundle extends AbstractBundle
+class GeekCellDDDBundle extends Bundle
 {
     public function getContainerExtension(): null|ExtensionInterface
     {
