@@ -10,10 +10,10 @@
         }
     ],
     "require": {
-        "symfony/http-kernel": "^6.2",
-        "symfony/event-dispatcher": "^6.2",
-        "symfony/dependency-injection": "^6.2",
-        "symfony/config": "^6.2",
+        "symfony/http-kernel": "^6.0",
+        "symfony/event-dispatcher": "^6.0",
+        "symfony/dependency-injection": "^6.0",
+        "symfony/config": "^6.0",
         "beberlei/assert": "^3.3"
     },
     "autoload": {
