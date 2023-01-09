@@ -1,7 +1,7 @@
 {
     "name": "geekcell/ddd-bundle",
     "type": "symfony-bundle",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "license": "MIT",
     "authors": [
         {
