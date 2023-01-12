@@ -1032,12 +1032,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/geekcell/php-ddd.git",
-                "reference": "990736de6849dbf00958d90efdc6eb4294de215b"
+                "reference": "af14513ffd5295cdb7b3e9e4d6b129b2273e6cde"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/geekcell/php-ddd/zipball/990736de6849dbf00958d90efdc6eb4294de215b",
-                "reference": "990736de6849dbf00958d90efdc6eb4294de215b",
+                "url": "https://api.github.com/repos/geekcell/php-ddd/zipball/af14513ffd5295cdb7b3e9e4d6b129b2273e6cde",
+                "reference": "af14513ffd5295cdb7b3e9e4d6b129b2273e6cde",
                 "shasum": ""
             },
             "require": {
@@ -1073,7 +1073,7 @@
                 "issues": "https://github.com/geekcell/php-ddd/issues",
                 "source": "https://github.com/geekcell/php-ddd/tree/main"
             },
-            "time": "2023-01-12T18:18:47+00:00"
+            "time": "2023-01-12T22:08:00+00:00"
         },
         {
             "name": "psr/cache",

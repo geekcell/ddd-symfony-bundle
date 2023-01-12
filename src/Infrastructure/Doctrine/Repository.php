@@ -7,7 +7,8 @@ namespace GeekCell\DddBundle\Infrastructure\Doctrine;
 use Assert\Assert;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\ORM\Tools\Pagination\Paginator as OrmPaginator;
+use GeekCell\Ddd\Contracts\Domain\Paginator;
 use GeekCell\Ddd\Contracts\Domain\Repository as RepositoryInterface;
 use GeekCell\Ddd\Domain\Collection;
 use GeekCell\DddBundle\Infrastructure\Doctrine\Paginator as DoctrinePaginator;
@@ -19,21 +20,6 @@ abstract class Repository implements RepositoryInterface
      * @var QueryBuilder
      */
     private QueryBuilder $queryBuilder;
-
-    /**
-     * @var null|int
-     */
-    private ?int $itemsPerPage = null;
-
-    /**
-     * @var null|int
-     */
-    private ?int $currentPage = null;
-
-    /**
-     * @var bool
-     */
-    private bool $isPaginated = false;
 
     /**
      * Constructor.
@@ -62,14 +48,13 @@ abstract class Repository implements RepositoryInterface
     /**
      * @inheritDoc
      */
-    public function collect(): static
+    public function collect(): Collection
     {
-        $clone = clone $this;
-        $clone->itemsPerPage = null;
-        $clone->currentPage = null;
-        $clone->isPaginated = false;
+        $collectionClass = $this->collectionType;
+        $results = $this->queryBuilder->getQuery()->getResult() ?? [];
 
-        return $clone;
+        /** @var Collection */
+        return new $collectionClass($results);
     }
 
     /**
@@ -78,14 +63,20 @@ abstract class Repository implements RepositoryInterface
     public function paginate(
         int $itemsPerPage,
         int $currentPage = 1
-    ): static
+    ): Paginator
     {
-        $clone = clone $this;
-        $clone->itemsPerPage = $itemsPerPage;
-        $clone->currentPage = $currentPage;
-        $clone->isPaginated = true;
+        $repository = $this->filter(
+            function (QueryBuilder $queryBuilder) use (
+                $itemsPerPage, $currentPage
+            ) {
+                $queryBuilder
+                    ->setFirstResult($itemsPerPage * ($currentPage - 1))->setMaxResults($itemsPerPage);
+            }
+        );
 
-        return $clone;
+        return new DoctrinePaginator(
+            new OrmPaginator($repository->queryBuilder->getQuery())
+        );
     }
 
     /**
@@ -93,7 +84,7 @@ abstract class Repository implements RepositoryInterface
      */
     public function count(): int
     {
-        return count($this->toCollection());
+        return count($this->collect());
     }
 
     /**
@@ -101,47 +92,22 @@ abstract class Repository implements RepositoryInterface
      */
     public function getIterator(): Traversable
     {
-        if ($this->isPaginated) {
-            $repository = $this->filter(function (QueryBuilder $queryBuilder) {
-                $queryBuilder->setFirstResult(
-                    $this->itemsPerPage * ($this->currentPage - 1));
-                $queryBuilder->setMaxResults($this->itemsPerPage);
-            });
-
-            $paginator = new Paginator($repository->queryBuilder->getQuery());
-
-            return new DoctrinePaginator($paginator);
-        }
-
-        return $this->toCollection();
+        return $this->collect()->getIterator();
     }
 
     /**
      * Apply a filter to the repository by adding to the query builder.
      *
      * @param callable $filter  A callable that accepts a QueryBuilder
+     *
      * @return static
      */
-    protected function filter(callable $filter): static
+    public function filter(callable $filter): static
     {
         $clone = clone $this;
         $filter($clone->queryBuilder);
 
         return $clone;
-    }
-
-    /**
-     * Wraps the results of the query builder in a collection.
-     *
-     * @return Collection
-     */
-    protected function toCollection(): Collection
-    {
-        $collectionClass = $this->collectionType;
-        $results = $this->queryBuilder->getQuery()->getResult() ?? [];
-
-        /** @var Collection */
-        return new $collectionClass($results);
     }
 
     /**

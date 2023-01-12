@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace GeekCell\DddBundle\Infrastructure\Doctrine;
 
 use Assert\Assert;
-use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
+use Doctrine\ORM\Tools\Pagination\Paginator as OrmPaginator;
 use GeekCell\Ddd\Contracts\Domain\Paginator as PaginatorInterface;
 use Traversable;
 
@@ -21,11 +21,16 @@ class Paginator implements PaginatorInterface
      */
     private readonly int $maxResults;
 
+    /**
+     * Constructor.
+     *
+     * @param OrmPaginator $ormPaginator
+     */
     public function __construct(
-        private readonly DoctrinePaginator $doctrinePaginator,
+        private readonly OrmPaginator $ormPaginator,
     )
     {
-        $query = $this->doctrinePaginator->getQuery();
+        $query = $this->ormPaginator->getQuery();
         $firstResult = $query->getFirstResult();
         $maxResults = $query->getMaxResults();
 
@@ -39,33 +44,55 @@ class Paginator implements PaginatorInterface
         $this->maxResults = $maxResults;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getCurrentPage(): int
     {
+        if (0 === $this->firstResult) {
+            return 1;
+        }
+
         return (int) ceil($this->firstResult / $this->maxResults);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getTotalPages(): int
     {
         return (int) ceil($this->getTotalItems() / $this->maxResults);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getItemsPerPage(): int
     {
         return $this->maxResults;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getTotalItems(): int
     {
-        return count($this->doctrinePaginator);
+        return $this->count();
     }
 
+    /**
+     * @inheritDoc
+     */
     public function count(): int
     {
-        return count(iterator_to_array($this->doctrinePaginator));
+        return count($this->ormPaginator);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getIterator(): Traversable
     {
-        return $this->doctrinePaginator->getIterator();
+        return $this->ormPaginator->getIterator();
     }
 }
