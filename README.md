@@ -1,6 +1,6 @@
 # Symfony Bundle for DDD
 
-Various additions for [domain driven development](https://martinfowler.com/tags/domain%20driven%20design.html) inside Symfony.
+This Symfony bundle augments [geekcell/php-ddd](https://github.com/geekcell/php-ddd) with framework-specific implementations to enable seamless [domain driven design](https://martinfowler.com/tags/domain%20driven%20design.html) in a familiar environment.
 
 ## Installation
 
@@ -9,6 +9,13 @@ To use this bundle, require it in Composer
 ```bash
 composer require geekcell/ddd-bundle
 ```
+
+## Quickstart
+
+- [Aggregate Root](#aggregate-root)
+- [Repositories](#repositories)
+- [Command & Query Bus](#command--query-bus)
+- [Supporting Tools](#supporting-tools)
 
 ## Aggregate Root
 
@@ -48,6 +55,10 @@ $order->commit(); // All recorded events will be dispatched and released
 _Hint: If you want to dispatch an event directly, use `AggregateRoot::dispatch()` instead of `AggregateRoot::record()`._
 
 If you cannot (or don't want to) extend from `AggregateRoot`, you can alternative use `DispatchableTrait` to add dispatching capabilities to any class. The former is however the recommended way.
+
+## Repositories
+
+_coming soon..._
 
 ## Command & Query Bus
 
