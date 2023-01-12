@@ -1,7 +1,18 @@
 services:
-    geek_cell_ddd.facade_setup_subscriber:
-        class: GeekCell\DDDBundle\EventSubscriber\FacadeSetupSubscriber
+    GeekCell\DddBundle\EventSubscriber\FacadeSetupSubscriber:
         arguments:
             - '@kernel'
         tags:
             - { name: kernel.event_subscriber }
+
+    GeekCell\Ddd\Contracts\Application\CommandBus:
+        class: GeekCell\DddBundle\Infrastructure\Messenger\CommandBus
+        arguments:
+            - '@Symfony\Component\Messenger\MessageBusInterface'
+        public: true
+
+    GeekCell\Ddd\Contracts\Application\QueryBus:
+        class: GeekCell\DddBundle\Infrastructure\Messenger\QueryBus
+        arguments:
+            - '@Symfony\Component\Messenger\MessageBusInterface'
+        public: true

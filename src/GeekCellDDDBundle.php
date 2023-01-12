@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace GeekCell\DDDBundle;
+namespace GeekCell\DddBundle;
 
-use GeekCell\DDDBundle\DependencyInjection\GeekCellDDDExtension;
+use GeekCell\DddBundle\DependencyInjection\GeekCellDddExtension;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * Class GeekCellDDDBundle.
+ * Class GeekCellDddBundle.
  * This is the main bundle class.
  *
- * @package GeekCell\DDDBundle
+ * @package GeekCell\DddBundle
  * @codeCoverageIgnore
  */
-class GeekCellDDDBundle extends Bundle
+class GeekCellDddBundle extends Bundle
 {
     public function getContainerExtension(): null|ExtensionInterface
     {
-        return new GeekCellDDDExtension();
+        return new GeekCellDddExtension();
     }
 }

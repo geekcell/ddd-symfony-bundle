@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace GeekCell\DDDBundle\Support\Facades;
+namespace GeekCell\DddBundle\Support\Facades;
 
 /**
  * Class EventDispatcher.
  * This is a facade for the event dispatcher.
  *
- * @package GeekCell\DDDBundle\Support\Facades
+ * @package GeekCell\DddBundle\Support\Facades
  * @codeCoverageIgnore
  */
 class EventDispatcher extends Facade

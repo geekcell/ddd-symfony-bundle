@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GeekCell\DDDBundle\DependencyInjection;
+namespace GeekCell\DddBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -12,10 +12,10 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 /**
  * @codeCoverageIgnore
  *
- * @package GeekCell\DDDBundle\DependencyInjection
+ * @package GeekCell\DddBundle\DependencyInjection
  * @codeCoverageIgnore
  */
-class GeekCellDDDExtension extends Extension
+class GeekCellDddExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container): void
     {
