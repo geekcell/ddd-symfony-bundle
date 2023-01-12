@@ -11,12 +11,13 @@
     ],
     "require": {
         "beberlei/assert": "^3.3",
-        "geekcell/ddd": "^2.0",
+        "geekcell/ddd": "dev-main",
         "symfony/config": "^6.0",
         "symfony/dependency-injection": "^6.0",
         "symfony/event-dispatcher": "^6.0",
         "symfony/http-kernel": "^6.0",
-        "symfony/messenger": "^6.0"
+        "symfony/messenger": "^6.0",
+        "doctrine/orm": "^2.12"
     },
     "autoload": {
         "psr-4": {
