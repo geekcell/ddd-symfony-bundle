@@ -12,7 +12,6 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  * Class GeekCellDddBundle.
  * This is the main bundle class.
  *
- * @package GeekCell\DddBundle
  * @codeCoverageIgnore
  */
 class GeekCellDddBundle extends Bundle
