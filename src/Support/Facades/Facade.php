@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GeekCell\DDDBundle\Support\Facades;
+namespace GeekCell\DddBundle\Support\Facades;
 
 use Mockery;
 use Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException;
@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Kernel;
  * Class Facade.
  * This is the base class for all facades.
  *
- * @package GeekCell\DDDBundle\Support\Facades
+ * @package GeekCell\DddBundle\Support\Facades
  */
 abstract class Facade
 {

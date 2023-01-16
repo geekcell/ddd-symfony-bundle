@@ -1,9 +1,9 @@
 <?php
 
-namespace GeekCell\DDDBundle\Tests\Unit\Support\Facades;
+namespace GeekCell\DddBundle\Tests\Unit\Support\Facades;
 
 use BadMethodCallException;
-use GeekCell\DDDBundle\Support\Facades\Facade;
+use GeekCell\DddBundle\Support\Facades\Facade;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;

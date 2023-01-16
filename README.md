@@ -1,6 +1,6 @@
 # Symfony Bundle for DDD
 
-Various additions for [domain driven development](https://martinfowler.com/tags/domain%20driven%20design.html) inside Symfony.
+This Symfony bundle augments [geekcell/php-ddd](https://github.com/geekcell/php-ddd) with framework-specific implementations to enable seamless [domain driven design](https://martinfowler.com/tags/domain%20driven%20design.html) in a familiar environment.
 
 ## Installation
 
@@ -10,6 +10,13 @@ To use this bundle, require it in Composer
 composer require geekcell/ddd-bundle
 ```
 
+## Quickstart
+
+- [Aggregate Root](#aggregate-root)
+- [Repositories](#repositories)
+- [Command & Query Bus](#command--query-bus)
+- [Supporting Tools](#supporting-tools)
+
 ## Aggregate Root
 
 Extend from `AggregateRoot` to record and commit domain events. Domain events must implement the (marker) interface `DomainEvent`. Events will be dispatched via the currently configured Symfony event dispatcher.
@@ -17,32 +24,105 @@ Extend from `AggregateRoot` to record and commit domain events. Domain events mu
 ### Example Usage
 
 ```php
-use GeekCell\DDDBundle\Domain\Event\DomainEvent;
-use GeekCell\DDDBundle\Domain\Model\AggregateRoot;
+use GeekCell\Ddd\Contracts\Domain\Event as DomainEvent;
+use GeekCell\DddBundle\Domain\AggregateRoot;
 
 class OrderPlacedEvent implements DomainEvent
 {
-    ...
+    public function __construct(
+        private readonly Order $order,
+    ) {
+    }
+
+    // Getters etc.
 }
 
 class Order extends AggregateRoot
 {
     public function save(): void
     {
-        $this->record(new OrderPlacedEvent());
+        $this->record(new OrderPlacedEvent($this));
     }
 
-    ...
+    // ...
 }
 
-$order = new Order();
+$order = new Order( /* ... */ );
 $order->save();
-$order->commit(); // <- Events will be dispatched
+$order->commit(); // All recorded events will be dispatched and released
 ```
 
 _Hint: If you want to dispatch an event directly, use `AggregateRoot::dispatch()` instead of `AggregateRoot::record()`._
 
 If you cannot (or don't want to) extend from `AggregateRoot`, you can alternative use `DispatchableTrait` to add dispatching capabilities to any class. The former is however the recommended way.
+
+## Repositories
+
+_coming soon..._
+
+## Command & Query Bus
+
+You can use `CommandBus` and `QueryBus` as services to implement [CQRS](https://martinfowler.com/bliki/CQRS.html). Internally, both buses will use the [Symfony messenger](https://symfony.com/doc/current/messenger.html) as "backend".
+
+## Example Usage
+
+```php
+// src/Application/Query/TopRatedBookQuery.php
+use GeekCell\Ddd\Contracts\Application\Query;
+
+class TopRatedBooksQuery implements Query
+{
+    public function __construct(
+        private readonly string $category,
+        private readonly int $sinceDays,
+        private readonly int $limit = 10,
+    ) {
+    }
+
+    // Getters etc.
+}
+
+// src/Application/Query/TopRatedBookQueryHandler.php
+use GeekCell\Ddd\Contracts\Application\QueryHandler;
+
+#[AsMessageHandler]
+class TopRatedBookQueryHandler implements QueryHandler
+{
+    public function __construct(
+        private readonly BookRepository $repository,
+    ) {
+    }
+
+    public function __invoke(TopRatedBookQuery $query)
+    {
+        $books = $this->repository
+            ->findTopRated($query->getCategory(), $query->getSinceDays())
+            ->paginate($query->getLimit());
+
+        return $books;
+    }
+}
+
+// src/Infrastructure/Http/Controller/BookController.php
+use GeekCell\Ddd\Contracts\Application\QueryBus;
+
+class BookController extends AbstractController
+{
+    public function __construct(
+        private readonly QueryBus $queryBus,
+    ) {
+    }
+
+    #[Route('/books/top-rated')]
+    public function getTopRated(Request $request)
+    {
+        $query = new TopRatedBooksQuery( /* extract from request */ );
+        $topRatedBooks = $this->queryBus->dispatch($query);
+
+        // ...
+    }
+}
+```
 
 ## Supporting Tools
 
@@ -51,7 +131,7 @@ If you cannot (or don't want to) extend from `AggregateRoot`, you can alternativ
 Facades are heavily inspired by [Laravel's Facades](https://laravel.com/docs/facades) and are more or less singletons on steroids. They are basically a shortcut to services inside the DIC.
 
 ```php
-use GeekCell\DDDBundle\Support\Facades\EventDispatcher;
+use GeekCell\DddBundle\Support\Facades\EventDispatcher;
 
 EventDispatcher::dispatch($someEvent);
 
@@ -61,7 +141,7 @@ EventDispatcher::dispatch($someEvent);
 You can create your own facades by extending from `Facade` and implementing the `Facade::getFacadeAccessor()` method to return the DIC service alias.
 
 ```php
-use GeekCell\DDDBundle\Support\Facades\Facade;
+use GeekCell\DddBundle\Support\Facades\Facade;
 
 class Logger extends Facade
 {
