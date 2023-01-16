@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.1](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.1.0...v1.1.1) (2023-01-16)
+
+
+### Bug Fixes
+
+* rename bundle file to match PSR-4 requirements. ([6f37a54](https://github.com/geekcell/ddd-symfony-bundle/commit/6f37a54b847e9727398e450e9d24cef0a2758c33))
+
+
+### Miscellaneous Chores
+
+* Update geekcell/ddd dependency. ([769384a](https://github.com/geekcell/ddd-symfony-bundle/commit/769384a2695656c9534bc832812295f12199222e))
+
 ## 1.1.0 (2023-01-16)
 
 
