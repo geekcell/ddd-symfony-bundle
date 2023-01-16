@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "066cdbbb2263eed623c505ccc42bd70d",
+    "content-hash": "4d05194a04174b06978850cc035d4f4d",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -1084,16 +1084,16 @@
         },
         {
             "name": "geekcell/ddd",
-            "version": "dev-main",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/geekcell/php-ddd.git",
-                "reference": "c3a4a951714909a4e61a56044aef8f99cf86dae2"
+                "reference": "d3f74c1fcbdcdef7ed5b898181364d24e0a3229b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/geekcell/php-ddd/zipball/c3a4a951714909a4e61a56044aef8f99cf86dae2",
-                "reference": "c3a4a951714909a4e61a56044aef8f99cf86dae2",
+                "url": "https://api.github.com/repos/geekcell/php-ddd/zipball/d3f74c1fcbdcdef7ed5b898181364d24e0a3229b",
+                "reference": "d3f74c1fcbdcdef7ed5b898181364d24e0a3229b",
                 "shasum": ""
             },
             "require": {
@@ -1108,7 +1108,6 @@
                 "phpstan/phpstan-mockery": "^1.1",
                 "phpunit/phpunit": "^9.5"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -1126,11 +1125,12 @@
                     "email": "pascal.cremer@geekcell.io"
                 }
             ],
+            "description": "Your ultimate guard rails for domain driven design with PHP.",
             "support": {
                 "issues": "https://github.com/geekcell/php-ddd/issues",
-                "source": "https://github.com/geekcell/php-ddd/tree/main"
+                "source": "https://github.com/geekcell/php-ddd/tree/v1.0.0"
             },
-            "time": "2023-01-16T11:17:06+00:00"
+            "time": "2023-01-16T13:57:11+00:00"
         },
         {
             "name": "psr/cache",
@@ -5849,9 +5849,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "geekcell/ddd": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
