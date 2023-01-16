@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4d05194a04174b06978850cc035d4f4d",
+    "content-hash": "3b9bcc99b222bfebeed754aa336ff989",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -1084,16 +1084,16 @@
         },
         {
             "name": "geekcell/ddd",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/geekcell/php-ddd.git",
-                "reference": "d3f74c1fcbdcdef7ed5b898181364d24e0a3229b"
+                "reference": "21f81f7a8948d17d43249b2b00579b6261060d00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/geekcell/php-ddd/zipball/d3f74c1fcbdcdef7ed5b898181364d24e0a3229b",
-                "reference": "d3f74c1fcbdcdef7ed5b898181364d24e0a3229b",
+                "url": "https://api.github.com/repos/geekcell/php-ddd/zipball/21f81f7a8948d17d43249b2b00579b6261060d00",
+                "reference": "21f81f7a8948d17d43249b2b00579b6261060d00",
                 "shasum": ""
             },
             "require": {
@@ -1128,9 +1128,9 @@
             "description": "Your ultimate guard rails for domain driven design with PHP.",
             "support": {
                 "issues": "https://github.com/geekcell/php-ddd/issues",
-                "source": "https://github.com/geekcell/php-ddd/tree/v1.0.0"
+                "source": "https://github.com/geekcell/php-ddd/tree/v1.0.1"
             },
-            "time": "2023-01-16T13:57:11+00:00"
+            "time": "2023-01-16T14:38:30+00:00"
         },
         {
             "name": "psr/cache",
