@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.1.1...v1.1.2) (2023-01-16)
+
+
+### Bug Fixes
+
+* Rename file to match PSR-4 autoloading standard. ([2e771ef](https://github.com/geekcell/ddd-symfony-bundle/commit/2e771efcf5776ade3c513f170c5e1968180f7b62))
+
 ## [1.1.1](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.1.0...v1.1.1) (2023-01-16)
 
 
