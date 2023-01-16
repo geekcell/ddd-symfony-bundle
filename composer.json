@@ -17,7 +17,8 @@
         "symfony/event-dispatcher": "^6.0",
         "symfony/http-kernel": "^6.0",
         "symfony/messenger": "^6.0",
-        "doctrine/orm": "^2.12"
+        "doctrine/orm": "^2.12",
+        "symfony/string": "^6.2"
     },
     "autoload": {
         "psr-4": {

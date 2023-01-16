@@ -14,6 +14,8 @@ use GeekCell\Ddd\Domain\Collection;
 use GeekCell\DddBundle\Infrastructure\Doctrine\Paginator as DoctrinePaginator;
 use Traversable;
 
+use function Symfony\Component\String\u;
+
 abstract class Repository implements RepositoryInterface
 {
     /**
@@ -25,24 +27,24 @@ abstract class Repository implements RepositoryInterface
      * Constructor.
      *
      * @param EntityManagerInterface $entityManager  The entity manager
-     * @param string $entityClass                    The entity class
-     * @param string $collectionType                 The collection type
+     * @param class-string $entityType               The entity class
      * @param string $alias                          Entity alias
      */
     public function __construct(
         protected EntityManagerInterface $entityManager,
-        string $entityClass,
-        protected string $collectionType,
-        string $alias,
+        string $entityType,
+        ?string $alias = null,
     ) {
-        Assert::that($entityClass)->classExists();
-        Assert::that($collectionType)->classExists();
-        Assert::that($alias)->notEmpty();
+        Assert::that($entityType)->classExists();
+
+        if (null === $alias) {
+            $alias = $this->determineAlias($entityType);
+        }
 
         $this->queryBuilder = $this->entityManager
             ->createQueryBuilder()
             ->select($alias)
-            ->from($entityClass, $alias);
+            ->from($entityType, $alias);
     }
 
     /**
@@ -50,11 +52,11 @@ abstract class Repository implements RepositoryInterface
      */
     public function collect(): Collection
     {
-        $collectionClass = $this->collectionType;
+        /** @var array<object> $results */
         $results = $this->queryBuilder->getQuery()->getResult() ?? [];
 
         /** @var Collection */
-        return new $collectionClass($results);
+        return new Collection($results);
     }
 
     /**
@@ -116,5 +118,18 @@ abstract class Repository implements RepositoryInterface
     public function __clone(): void
     {
         $this->queryBuilder = clone $this->queryBuilder;
+    }
+
+    /**
+     * Determine the entity alias.
+     *
+     * @param class-string $entityType
+     *
+     * @return string
+     */
+    protected function determineAlias(string $entityType): string
+    {
+        $shortName = (new \ReflectionClass($entityType))->getShortName();
+        return u($shortName)->camel()->snake()->toString();
     }
 }
