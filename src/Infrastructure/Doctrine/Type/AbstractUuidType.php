@@ -17,6 +17,10 @@ abstract class AbstractUuidType extends GuidType
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
+        if (is_string($value)) {
+            return $value;
+        }
+
         if (!$value instanceof Uuid) {
             throw ConversionException::conversionFailedInvalidType(
                 $value,
