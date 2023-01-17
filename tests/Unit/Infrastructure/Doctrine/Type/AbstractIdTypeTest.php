@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GeekCell\DddBundle\Tests\Unit\Infrastructure\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\ConversionException;
 use GeekCell\Ddd\Domain\ValueObject\Id;
 use GeekCell\DddBundle\Infrastructure\Doctrine\Type\AbstractIdType;
 use Mockery;
@@ -47,6 +48,33 @@ class AbstractIdTypeTest extends TestCase
 
         // Then
         $this->assertSame($intId, $result);
+    }
+
+    public function testConvertToDatabaseValueScalar(): void
+    {
+        // Given
+        $intId = 42;
+        $type = new FooIdType();
+        $platform = Mockery::mock(AbstractPlatform::class);
+
+        // When
+        $result = $type->convertToDatabaseValue($intId, $platform);
+
+        // Then
+        $this->assertSame($intId, $result);
+    }
+
+    public function testConvertToDatabaseValueInvalidType(): void
+    {
+        // Given
+        $type = new FooIdType();
+        $platform = Mockery::mock(AbstractPlatform::class);
+
+        // Then
+        $this->expectException(ConversionException::class);
+
+        // When
+        $type->convertToDatabaseValue('foo', $platform);
     }
 
     public function testConvertToPhpValue(): void

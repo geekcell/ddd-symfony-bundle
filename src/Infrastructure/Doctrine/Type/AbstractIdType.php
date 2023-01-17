@@ -13,6 +13,10 @@ abstract class AbstractIdType extends IntegerType
 {
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
+        if (is_int($value)) {
+            return $value;
+        }
+
         if (!$value instanceof Id) {
             throw ConversionException::conversionFailedInvalidType(
                 $value,
