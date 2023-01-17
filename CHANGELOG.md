@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.1.2...v1.1.3) (2023-01-17)
+
+
+### Bug Fixes
+
+* Add additional check for scalar values. ([#9](https://github.com/geekcell/ddd-symfony-bundle/issues/9)) ([b6f0cb1](https://github.com/geekcell/ddd-symfony-bundle/commit/b6f0cb18dd2af04c13a7ffbe807ecf2048008199))
+
 ## [1.1.2](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.1.1...v1.1.2) (2023-01-16)
 
 
