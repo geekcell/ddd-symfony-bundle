@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.1.3...v1.1.4) (2023-01-20)
+
+
+### Miscellaneous Chores
+
+* **deps:** Update `geekcell/ddd` to ^1.1.0 ([c48b4c0](https://github.com/geekcell/ddd-symfony-bundle/commit/c48b4c028ddf09491208c459df66e45443632d87))
+
 ## [1.1.3](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.1.2...v1.1.3) (2023-01-17)
 
 
