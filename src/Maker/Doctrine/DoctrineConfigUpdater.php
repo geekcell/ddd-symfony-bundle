@@ -42,7 +42,7 @@ class DoctrineConfigUpdater
      */
     public function updateORMDefaultEntityMapping(string $yamlSource, string $mappingType, string $directory): string
     {
-        Assert\Assertion::inArray($mappingType, ['xml', 'annotation'], 'Invalid mapping type: %s');
+        Assert\Assertion::inArray($mappingType, ['xml', 'attribute'], 'Invalid mapping type: %s');
 
         $data = $this->createYamlSourceManipulator($yamlSource);
         $data['doctrine']['orm']['mappings']['App']['type'] = $mappingType;
