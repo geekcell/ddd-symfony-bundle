@@ -24,7 +24,7 @@ trait DispatchableTrait
     /**
      * @see GeekCell\Ddd\Contracts\Core\Dispatchable
      */
-    public function dispatch(object $event)
+    public function dispatch(object $event): void
     {
         Assertion::isInstanceOf($event, DomainEvent::class);
         $this->getEventDispatcher()->dispatch($event);
