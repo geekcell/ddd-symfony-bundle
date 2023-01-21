@@ -4,33 +4,40 @@ namespace <?= $namespace; ?>;
 
 <?= $use_statements ?>
 
-class <?= $class_name ?> <?php if ($aggregate_root) { ?>extends AggregateRoot<?php } ?><?= "\n" ?>
+<?php if (isset($as_entity) && true === $as_entity): ?>
+#[ORM\Entity]
+<?php endif; ?>
+class <?= $class_name ?> <?php if ($extends_aggregate_root) { ?>extends AggregateRoot<?php } ?><?= "\n" ?>
 {
-<?php if ($with_identity): ?>
+<?php if (isset($identity_type)): ?>
     /**
-     * @var <?= $class_name . ucfirst($with_identity) . "\n" ?>
+     * @var <?= $identity_class . "\n" ?>
      */
-    private <?= $class_name . ucfirst($with_identity) ?> $<?= $with_identity ?>;
+<?php if (isset($as_entity) && true === $as_entity): ?>
+    #[ORM\Id]
+    #[ORM\Column(type: <?= $type_class ?>::NAME)]
+<?php endif; ?>
+    private <?= $identity_class ?> $<?= $identity_type ?>;
 
 <?php endif ?>
     public function __construct()
     {
-<?php if ('id' === $with_identity): ?>
-        $this->id = new <?= $class_name ?>Id(1);
-<?php elseif ('uuid' === $with_identity): ?>
-        $this->uuid = <?= $class_name ?>Uuid::random();
+<?php if (isset($identity_type) && 'id' === $identity_type): ?>
+        $this->id = new <?= $identity_class ?>(1);
+<?php elseif (isset($identity_type) && 'uuid' === $identity_type): ?>
+        $this->uuid = <?= $identity_class ?>::random();
 <?php endif; ?>
     }
-<?php if ($with_identity): ?>
+<?php if (isset($identity_type)): ?>
 
     /**
-     * Get <?= ucfirst($with_identity) . "\n" ?>
+     * Get <?= ucfirst($identity_type) . "\n" ?>
      *
-     * @return <?= $class_name . ucfirst($with_identity) . "\n" ?>
+     * @return <?= $identity_class . "\n" ?>
      */
-    public function get<?= ucfirst($with_identity) ?>(): <?= $class_name . ucfirst($with_identity) . "\n" ?>
+    public function get<?= ucfirst($identity_type) ?>(): <?= $identity_class . "\n" ?>
     {
-        return $this-><?= $with_identity ?>;
+        return $this-><?= $identity_type ?>;
     }
 <?php endif; ?>
 }

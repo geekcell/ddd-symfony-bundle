@@ -4,6 +4,6 @@ namespace <?= $namespace; ?>;
 
 <?= $use_statements ?>
 
-class <?= $class_name ?> extends <?= $extends_alias . "\n" ?>
+class <?= $identity_class ?> extends <?= $extends_alias . "\n" ?>
 {
 }

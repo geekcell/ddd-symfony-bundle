@@ -18,5 +18,13 @@ services:
         public: true
 
     GeekCell\DddBundle\Maker\MakeModel:
+        class: GeekCell\DddBundle\Maker\MakeModel
+        arguments:
+            - '@GeekCell\DddBundle\Maker\Doctrine\DoctrineConfigUpdater'
+            - '@maker.file_manager'
         tags:
             - { name: maker.command }
+
+    GeekCell\DddBundle\Maker\Doctrine\DoctrineConfigUpdater:
+        class: GeekCell\DddBundle\Maker\Doctrine\DoctrineConfigUpdater
+        public: false
