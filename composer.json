@@ -36,7 +36,8 @@
         "mockery/mockery": "^1.5",
         "phpstan/phpstan": "^1.9",
         "phpstan/phpstan-mockery": "^1.1",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "symfony/maker-bundle": "^1.48"
     },
     "scripts": {
         "gc:tests": "phpunit --testdox --colors=always",

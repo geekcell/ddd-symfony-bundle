@@ -16,3 +16,7 @@ services:
         arguments:
             - '@Symfony\Component\Messenger\MessageBusInterface'
         public: true
+
+    GeekCell\DddBundle\Maker\MakeModel:
+        tags:
+            - { name: maker.command }
