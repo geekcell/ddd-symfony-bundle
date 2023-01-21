@@ -65,11 +65,11 @@ abstract class Repository implements RepositoryInterface
     public function paginate(
         int $itemsPerPage,
         int $currentPage = 1
-    ): Paginator
-    {
+    ): Paginator {
         $repository = $this->filter(
             function (QueryBuilder $queryBuilder) use (
-                $itemsPerPage, $currentPage
+                $itemsPerPage,
+                $currentPage
             ) {
                 $queryBuilder
                     ->setFirstResult($itemsPerPage * ($currentPage - 1))->setMaxResults($itemsPerPage);

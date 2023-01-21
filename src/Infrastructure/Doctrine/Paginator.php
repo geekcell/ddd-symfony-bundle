@@ -28,8 +28,7 @@ class Paginator implements PaginatorInterface
      */
     public function __construct(
         private readonly OrmPaginator $ormPaginator,
-    )
-    {
+    ) {
         $query = $this->ormPaginator->getQuery();
         $firstResult = $query->getFirstResult();
         $maxResults = $query->getMaxResults();

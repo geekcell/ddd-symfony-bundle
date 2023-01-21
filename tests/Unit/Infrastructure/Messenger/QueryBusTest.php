@@ -50,8 +50,7 @@ class QueryBusTest extends TestCase
     private function createMessageBus(
         string $type,
         callable $handler
-    ): MessageBus
-    {
+    ): MessageBus {
         return new MessageBus([
             new HandleMessageMiddleware(new HandlersLocator([
                 $type => [$handler],
