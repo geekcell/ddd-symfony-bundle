@@ -239,8 +239,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         InputInterface $input,
         ConsoleStyle $io,
         Generator $generator
-    ): void
-    {
+    ): void {
         if (!$this->shouldGenerateIdentity($input)) {
             return;
         }
@@ -343,6 +342,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         );
         $generator->dumpFile($configPath, $newYaml);
 
+        $this->classesToImport[] = $mappingTypeClassNameDetails->getFullName();
         $this->templateVariables['type_class'] = $mappingTypeClassNameDetails->getShortName();
         $this->templateVariables['type_name'] = $typeName;
 
@@ -363,8 +363,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         InputInterface $input,
         ConsoleStyle $io,
         Generator $generator
-    ): void
-    {
+    ): void {
         if (!$this->shouldGenerateEntity($input)) {
             return;
         }
