@@ -5,7 +5,7 @@
 
     <entity name="<?= $model_class ?>" table="<?= $table_name ?>">
 <?php if ($has_identity): ?>
-        <id name="identity" type="<?= $type_name ?>" column="<?= $identity_column_name ?>"/>
+        <id name="<?= $identity_column_name ?>" type="<?= $type_name ?>" column="<?= $identity_column_name ?>"/>
 
 <?php endif; ?>
         <!-- Add your fields here -->
