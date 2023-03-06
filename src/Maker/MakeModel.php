@@ -10,6 +10,7 @@ use GeekCell\DddBundle\Domain\AggregateRoot;
 use GeekCell\DddBundle\Infrastructure\Doctrine\Type\AbstractIdType;
 use GeekCell\DddBundle\Infrastructure\Doctrine\Type\AbstractUuidType;
 use GeekCell\DddBundle\Maker\Doctrine\DoctrineConfigUpdater;
+use Symfony\Bundle\MakerBundle\Exception\RuntimeCommandException;
 use Symfony\Bundle\MakerBundle\InputConfiguration;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
@@ -21,12 +22,15 @@ use Symfony\Bundle\MakerBundle\Maker\AbstractMaker;
 use Symfony\Bundle\MakerBundle\Util\ClassNameDetails;
 use Symfony\Bundle\MakerBundle\Util\UseStatementGenerator;
 use Symfony\Bundle\MakerBundle\Util\YamlManipulationFailedException;
+use Symfony\Bundle\MakerBundle\Util\YamlSourceManipulator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 
 use function Symfony\Component\String\u;
+
+const DOCTRINE_CONFIG_PATH = 'config/packages/doctrine.yaml';
 
 final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
 {
@@ -124,6 +128,10 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
      */
     public function interact(InputInterface $input, ConsoleStyle $io, Command $command): void
     {
+        if (!$this->fileManager->fileExists(DOCTRINE_CONFIG_PATH)) {
+            throw new RuntimeCommandException('The file "' . DOCTRINE_CONFIG_PATH . '" does not exist. This command requires that file to exist so that it can be updated.');
+        }
+
         /** @var string $modelName */
         $modelName = $input->getArgument('name');
         $useSuffix = $io->confirm(
@@ -369,20 +377,15 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         }
 
         $modelName = $modelClassNameDetails->getShortName();
-        $configPath = 'config/packages/doctrine.yaml';
-        if (!$this->fileManager->fileExists($configPath)) {
-            $io->error(sprintf('Doctrine configuration at path "%s" does not exist.', $configPath));
-            return;
-        }
 
         if ($this->shouldGenerateEntityAttributes($input)) {
             try {
                 $newYaml = $this->doctrineUpdater->updateORMDefaultEntityMapping(
-                    $this->fileManager->getFileContents($configPath),
+                    $this->fileManager->getFileContents(DOCTRINE_CONFIG_PATH),
                     'attribute',
                     '%kernel.project_dir%/src/Domain/Model',
                 );
-                $generator->dumpFile($configPath, $newYaml);
+                $generator->dumpFile(DOCTRINE_CONFIG_PATH, $newYaml);
                 $this->classesToImport[] = ['Doctrine\\ORM\\Mapping' => 'ORM'];
                 $this->templateVariables['as_entity'] = true;
             } catch (YamlManipulationFailedException $e) {
@@ -407,11 +410,11 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
             try {
                 $mappingsDirectory = '/src/Infrastructure/Doctrine/ORM/Mapping';
                 $newYaml = $this->doctrineUpdater->updateORMDefaultEntityMapping(
-                    $this->fileManager->getFileContents($configPath),
+                    $this->fileManager->getFileContents(DOCTRINE_CONFIG_PATH),
                     'xml',
                     '%kernel.project_dir%'.$mappingsDirectory,
                 );
-                $generator->dumpFile($configPath, $newYaml);
+                $generator->dumpFile(DOCTRINE_CONFIG_PATH, $newYaml);
 
                 $targetPath = sprintf(
                     '%s%s/%s.orm.xml',
