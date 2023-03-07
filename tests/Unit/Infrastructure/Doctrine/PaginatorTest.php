@@ -21,7 +21,7 @@ class PaginatorTest extends TestCase
         $this->ormPaginatorMock = Mockery::mock(OrmPaginator::class);
     }
 
-    /**g
+    /**
      * @dataProvider provideCurrentPageData
      *
      * @param int $first
