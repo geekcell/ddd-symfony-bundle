@@ -1,0 +1,15 @@
+name: Tests
+
+on: [push]
+
+jobs:
+    unit-test:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v3
+        - uses: php-actions/composer@v6
+        - uses: php-actions/phpunit@v3
+        - name: PHPUnit Tests
+          uses: php-actions/phpunit@9.6
+          with:
+            bootstrap: vendor/autoload.php
