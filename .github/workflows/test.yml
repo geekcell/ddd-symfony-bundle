@@ -11,4 +11,5 @@ jobs:
         - name: PHPUnit Tests
           uses: php-actions/phpunit@v9
           with:
-            bootstrap: vendor/autoload.php
+            configuration: test/phpunit.xml
+            version: 9.6
