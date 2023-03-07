@@ -12,4 +12,3 @@ jobs:
           uses: php-actions/phpunit@v9
           with:
             configuration: test/phpunit.xml
-            version: 9.6
