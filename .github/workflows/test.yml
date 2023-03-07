@@ -11,4 +11,5 @@ jobs:
         - name: PHPUnit Tests
           uses: php-actions/phpunit@v9
           with:
+            php_version: 8.1
             configuration: tests/phpunit.xml
