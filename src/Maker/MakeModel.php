@@ -81,7 +81,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         $command
             ->addArgument(
                 'name',
-                InputArgument::OPTIONAL,
+                InputArgument::REQUIRED,
                 'The name of the model class (e.g. <fg=yellow>Customer</>)',
             )
             ->addOption(

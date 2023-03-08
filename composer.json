@@ -23,7 +23,7 @@
     },
     "autoload": {
         "psr-4": {
-            "GeekCell\\DddBundle\\": "src"
+            "GeekCell\\DddBundle\\": "src/"
         }
     },
     "autoload-dev": {
