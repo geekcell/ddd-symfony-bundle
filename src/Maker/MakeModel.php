@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Maker;
 
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use GeekCell\Ddd\Domain\ValueObject\Id;
 use GeekCell\Ddd\Domain\ValueObject\Uuid;
 use GeekCell\DddBundle\Domain\AggregateRoot;
@@ -22,7 +24,6 @@ use Symfony\Bundle\MakerBundle\Maker\AbstractMaker;
 use Symfony\Bundle\MakerBundle\Util\ClassNameDetails;
 use Symfony\Bundle\MakerBundle\Util\UseStatementGenerator;
 use Symfony\Bundle\MakerBundle\Util\YamlManipulationFailedException;
-use Symfony\Bundle\MakerBundle\Util\YamlSourceManipulator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -54,8 +55,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
     public function __construct(
         private DoctrineConfigUpdater $doctrineUpdater,
         private FileManager $fileManager,
-    ) {
-    }
+    ) {}
 
     /**
      * @inheritDoc
@@ -87,7 +87,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
             ->addOption(
                 'aggregate-root',
                 null,
-                InputOption::VALUE_NONE,
+                InputOption::VALUE_REQUIRED,
                 'Marks the model as aggregate root',
             )
             ->addOption(
@@ -105,7 +105,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
             ->addOption(
                 'with-suffix',
                 null,
-                InputOption::VALUE_NONE,
+                InputOption::VALUE_REQUIRED,
                 'Adds the suffix "Model" to the model class name',
             )
         ;
@@ -134,14 +134,17 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
 
         /** @var string $modelName */
         $modelName = $input->getArgument('name');
-        $useSuffix = $io->confirm(
-            sprintf(
-                'Do you want to suffix the model class name? (<fg=yellow>%sModel</>)',
-                $modelName,
-            ),
-            false,
-        );
-        $input->setOption('with-suffix', $useSuffix);
+
+        if (false === $input->getOption('with-suffix')) {
+            $useSuffix = $io->confirm(
+                sprintf(
+                    'Do you want to suffix the model class name? (<fg=yellow>%sModel</>)',
+                    $modelName,
+                ),
+                false,
+            );
+            $input->setOption('with-suffix', $useSuffix);
+        }
 
         if (false === $input->getOption('aggregate-root')) {
             $asAggregateRoot = $io->confirm(
@@ -212,24 +215,9 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         $this->templateVariables['class_name'] = $modelClassNameDetails->getShortName();
 
         $this->generateIdentity($modelName, $input, $io, $generator);
+        $this->generateEntityMappings($modelClassNameDetails, $input, $io, $generator);
         $this->generateEntity($modelClassNameDetails, $input, $io, $generator);
-
-        if ($input->getOption('aggregate-root')) {
-            $this->classesToImport[] = AggregateRoot::class;
-            $this->templateVariables['extends_aggregate_root'] = true;
-        }
-
-        // @phpstan-ignore-next-line
-        $this->templateVariables['use_statements'] = new UseStatementGenerator($this->classesToImport);
-
-        $templatePath = __DIR__.'/../Resources/skeleton/model/Model.tpl.php';
-        $generator->generateClass(
-            $modelClassNameDetails->getFullName(),
-            $templatePath,
-            $this->templateVariables,
-        );
-
-        $generator->writeChanges();
+        $this->generateRepository($modelClassNameDetails, $input, $io, $generator);
 
         $this->writeSuccessMessage($io);
     }
@@ -366,7 +354,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
      * @param ConsoleStyle $io
      * @param Generator $generator
      */
-    private function generateEntity(
+    private function generateEntityMappings(
         ClassNameDetails $modelClassNameDetails,
         InputInterface $input,
         ConsoleStyle $io,
@@ -439,6 +427,76 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         }
 
         // Write out the changes.
+        $generator->writeChanges();
+    }
+
+    /**
+     * Generate model entity
+     *
+     * @param ClassNameDetails $modelClassNameDetails
+     * @param InputInterface $input
+     * @param ConsoleStyle $io
+     * @param Generator $generator
+     */
+    private function generateEntity(
+        ClassNameDetails $modelClassNameDetails,
+        InputInterface $input,
+        ConsoleStyle $io,
+        Generator $generator
+    ): void {
+        if ($input->getOption('aggregate-root')) {
+            $this->classesToImport[] = AggregateRoot::class;
+            $this->templateVariables['extends_aggregate_root'] = true;
+        }
+
+        // @phpstan-ignore-next-line
+        $this->templateVariables['use_statements'] = new UseStatementGenerator($this->classesToImport);
+
+        $templatePath = __DIR__.'/../Resources/skeleton/model/Model.tpl.php';
+        $generator->generateClass(
+            $modelClassNameDetails->getFullName(),
+            $templatePath,
+            $this->templateVariables,
+        );
+
+        $generator->writeChanges();
+    }
+
+    /**
+     * Generate model repository
+     *
+     * @param InputInterface $input
+     * @param ConsoleStyle $io
+     * @param Generator $generator
+     */
+    private function generateRepository(
+        ClassNameDetails $modelClassNameDetails,
+        InputInterface $input,
+        ConsoleStyle $io,
+        Generator $generator
+    ): void {
+        $classNameDetails = $generator->createClassNameDetails(
+            $input->getArgument('name'),
+            'Repository\\',
+            'Repository',
+        );
+
+        $templateVars = [
+            'use_statements' => new UseStatementGenerator([
+                $modelClassNameDetails->getFullName(),
+                ServiceEntityRepository::class,
+                ManagerRegistry::class
+            ]),
+            'entity_class_name' => $modelClassNameDetails->getShortName()
+        ];
+
+        $templatePath = __DIR__.'/../Resources/skeleton/model/Repository.tpl.php';
+        $generator->generateClass(
+            $classNameDetails->getFullName(),
+            $templatePath,
+            $templateVars,
+        );
+
         $generator->writeChanges();
     }
 
