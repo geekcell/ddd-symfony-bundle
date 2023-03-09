@@ -153,3 +153,36 @@ class Logger extends Facade
 ```
 
 Although facades are better testable than regular singletons, it is highly recommended to only use them sparringly and always prefer normal dependency injection when possible.
+
+## Generator Commands
+
+This bundle adds several [maker bundle](https://symfony.com/bundles/SymfonyMakerBundle/current/index.html) commands to generate commonly used components.
+
+### Model / Repository
+
+This command can be used to generate:
+
+- The domain model class.
+- A repository class for the model.
+- The model's identity class as value object (optional).
+- A Doctrine database entity configuration, either as annotation or separate config file (optional).
+- A custom Doctrine type for the model's identity class (optional).
+
+#### Command Output
+
+```bash
+Description:
+  Creates a new domain model class
+
+Usage:
+  make:ddd:model [options] [--] [<name>]
+
+Arguments:
+  name                               The name of the model class (e.g. Customer)
+
+Options:
+      --aggregate-root               Marks the model as aggregate root
+      --entity=ENTITY                Use this model as Doctrine entity
+      --with-identity=WITH-IDENTITY  Whether an identity value object should be created
+      --with-suffix                  Adds the suffix "Model" to the model class name
+```
