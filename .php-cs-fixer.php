@@ -1,7 +1,10 @@
 <?php
 
 $finder = PhpCsFixer\Finder::create()
-    ->exclude(['var', 'vendor', 'migrations', 'fixtures'])
+    ->exclude([
+        'src/Resources/skeleton',
+        'vendor'
+    ])
     ->in(__DIR__)
 ;
 

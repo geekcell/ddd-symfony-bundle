@@ -9,7 +9,7 @@ use GeekCell\DddBundle\Infrastructure\Doctrine\Paginator as DoctrinePaginator;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
-class DoctrinePaginatorTest extends TestCase
+class PaginatorTest extends TestCase
 {
     /** @var OrmPaginator|Mockery\MockInterface */
     private mixed $ormPaginatorMock;
