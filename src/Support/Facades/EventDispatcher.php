@@ -4,19 +4,12 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Support\Facades;
 
-/**
- * Class EventDispatcher.
- * This is a facade for the event dispatcher.
- *
- * @package GeekCell\DddBundle\Support\Facades
- * @codeCoverageIgnore
- */
+use GeekCell\Facade\Facade;
+
 class EventDispatcher extends Facade
 {
     /**
-     * Get the registered name of the component.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     protected static function getFacadeAccessor(): string
     {

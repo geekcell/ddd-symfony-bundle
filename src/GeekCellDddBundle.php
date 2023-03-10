@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GeekCell\DddBundle;
 
 use GeekCell\DddBundle\DependencyInjection\GeekCellDddExtension;
+use GeekCell\Facade\Facade;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -16,8 +17,20 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class GeekCellDddBundle extends Bundle
 {
-    public function getContainerExtension(): null|ExtensionInterface
+    /**
+     * {@inheritdoc}
+     */
+    public function getContainerExtension(): ?ExtensionInterface
     {
         return new GeekCellDddExtension();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function boot(): void
+    {
+        parent::boot();
+        Facade::setContainer($this->container);
     }
 }
