@@ -54,7 +54,6 @@ final class MakeCommand extends AbstractBaseMakeQueryCommand
     {
         return [
             CommandHandler::class,
-            Collection::class,
             AsMessageHandler::class
         ];
     }

@@ -7,7 +7,7 @@ namespace <?= $namespace; ?>;
 #[AsMessageHandler]
 class <?= $class_name ?> implements CommandHandler
 {
-    public function __invoke(<?= $query_class_name ?> $query): Collection
+    public function __invoke(<?= $query_class_name ?> $query): void
     {
     }
 }
