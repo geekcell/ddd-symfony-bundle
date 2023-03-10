@@ -186,3 +186,25 @@ Options:
       --with-identity=WITH-IDENTITY  Whether an identity value object should be created
       --with-suffix                  Adds the suffix "Model" to the model class name
 ```
+
+### Query / Command
+
+These commands can be used to generate:
+
+- A query and query handler class.
+- A command and command handler class.
+
+The query / command generated is just an empty class. The handler class is registered as a message handler for the configured [Symfony Messenger](https://symfony.com/doc/current/messenger.html).
+
+#### Command Output
+
+```bash
+Description:
+  Creates a new query|command class and handler
+
+Usage:
+  make:ddd:query|command [<name>]
+
+Arguments:
+  name                               The name of the query|command class (e.g. Customer)
+```

@@ -25,9 +25,10 @@ services:
         tags:
             - { name: maker.command }
 
-    maker.maker.make_model:
-        alias: GeekCell\DddBundle\Maker\MakeModel
-        public: true
+    GeekCell\DddBundle\Maker\MakeQuery:
+        class: GeekCell\DddBundle\Maker\MakeQuery
+        tags:
+            - { name: maker.command }
 
     GeekCell\DddBundle\Maker\Doctrine\DoctrineConfigUpdater:
         class: GeekCell\DddBundle\Maker\Doctrine\DoctrineConfigUpdater
