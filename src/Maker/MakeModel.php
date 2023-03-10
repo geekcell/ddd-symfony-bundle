@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GeekCell\DddBundle\Maker;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use GeekCell\Ddd\Domain\ValueObject\Id;
 use GeekCell\Ddd\Domain\ValueObject\Uuid;
@@ -485,7 +486,8 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
             'use_statements' => new UseStatementGenerator([
                 $modelClassNameDetails->getFullName(),
                 ServiceEntityRepository::class,
-                ManagerRegistry::class
+                ManagerRegistry::class,
+                QueryBuilder::class
             ]),
             'entity_class_name' => $modelClassNameDetails->getShortName()
         ];
