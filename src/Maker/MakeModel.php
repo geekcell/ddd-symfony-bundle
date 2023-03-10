@@ -154,7 +154,6 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
                     $modelName,
                     $useSuffix ? 'Model' : '',
                 ),
-                true,
             );
             $input->setOption('aggregate-root', $asAggregateRoot);
         }
