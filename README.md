@@ -206,5 +206,26 @@ Usage:
   make:ddd:query|command [<name>]
 
 Arguments:
-  name                               The name of the query|command class (e.g. Customer)
+  name                     The name of the query|command class (e.g. Customer)
+```
+
+### Controller
+
+This command can be used to generate a controller with optional `QueryBus` and `CommandBus` dependencies.
+
+#### Command Output
+
+```bash
+Description:
+  Creates a new controller class
+
+Usage:
+  make:ddd:controller [options] [--] [<name>]
+
+Arguments:
+  name                       The name of the model class (e.g. Customer)
+
+Options:
+      --include-query-bus    Add a query bus dependency
+      --include-command-bus  Add a command bus dependency
 ```
