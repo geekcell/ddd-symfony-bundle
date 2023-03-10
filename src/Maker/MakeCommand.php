@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Maker;
 
-use GeekCell\Ddd\Contracts\Application\Query;
-use GeekCell\Ddd\Contracts\Application\QueryHandler;
+use GeekCell\Ddd\Contracts\Application\Command;
+use GeekCell\Ddd\Contracts\Application\CommandHandler;
 use GeekCell\Ddd\Domain\Collection;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-final class MakeQuery extends AbstractBaseMakeQueryCommand
+final class MakeCommand extends AbstractBaseMakeQueryCommand
 {
-    const TARGET = 'query';
+    const TARGET = 'command';
 
     /**
      * @inheritDoc
@@ -43,7 +43,7 @@ final class MakeQuery extends AbstractBaseMakeQueryCommand
     function getEntityUseStatements(): array
     {
         return [
-            Query::class
+            Command::class
         ];
     }
 
@@ -53,7 +53,7 @@ final class MakeQuery extends AbstractBaseMakeQueryCommand
     function getEntityHandlerUseStatements(): array
     {
         return [
-            QueryHandler::class,
+            CommandHandler::class,
             Collection::class,
             AsMessageHandler::class
         ];

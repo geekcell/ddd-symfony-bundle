@@ -30,6 +30,11 @@ services:
         tags:
             - { name: maker.command }
 
+    GeekCell\DddBundle\Maker\MakeCommand:
+        class: GeekCell\DddBundle\Maker\MakeCommand
+        tags:
+            - { name: maker.command }
+
     GeekCell\DddBundle\Maker\Doctrine\DoctrineConfigUpdater:
         class: GeekCell\DddBundle\Maker\Doctrine\DoctrineConfigUpdater
         public: false
