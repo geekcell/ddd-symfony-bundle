@@ -39,7 +39,7 @@ final class MakeQuery extends AbstractMaker implements InputAwareMakerInterface
      */
     public static function getCommandDescription(): string
     {
-        return 'Creates a new query class';
+        return 'Creates a new query class and handler';
     }
 
     /**
@@ -87,7 +87,12 @@ final class MakeQuery extends AbstractMaker implements InputAwareMakerInterface
         $this->writeSuccessMessage($io);
     }
 
-    private function generateQuery(ClassNameDetails $queryClassNameDetails, Generator $generator)
+    /**
+     * @param ClassNameDetails $queryClassNameDetails
+     * @param Generator $generator
+     * @return void
+     */
+    private function generateQuery(ClassNameDetails $queryClassNameDetails, Generator $generator): void
     {
         $templateVars = [
             'use_statements' => new UseStatementGenerator([
@@ -105,7 +110,12 @@ final class MakeQuery extends AbstractMaker implements InputAwareMakerInterface
         $generator->writeChanges();
     }
 
-    private function generateQueryHandler(ClassNameDetails $queryClassNameDetails, Generator $generator)
+    /**
+     * @param ClassNameDetails $queryClassNameDetails
+     * @param Generator $generator
+     * @return void
+     */
+    private function generateQueryHandler(ClassNameDetails $queryClassNameDetails, Generator $generator): void
     {
         $classNameDetails = $generator->createClassNameDetails(
             $queryClassNameDetails->getShortName(),
