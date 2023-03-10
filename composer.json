@@ -11,7 +11,6 @@
         }
     ],
     "require": {
-        "beberlei/assert": "^3.3",
         "geekcell/ddd": "^1.1.0",
         "symfony/config": "^6.0",
         "symfony/dependency-injection": "^6.0",
