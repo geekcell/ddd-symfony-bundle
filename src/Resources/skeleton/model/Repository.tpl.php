@@ -38,21 +38,20 @@ class <?= $class_name ?> extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return <?= $entity_class_name ?>[] Returns an array of <?= $entity_class_name ?> objects
-//     */
+//    * @return <?= $entity_class_name ?>[] Returns an array of <?= $entity_class_name ?> objects
+//    */
 //    public function findByExampleField($value): array
 //    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('t.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
+//        return $this->filter(function(QueryBuilder $queryBuilder) use ($value) {
+//            $queryBuilder
+//                ->andWhere('t.exampleField = :val')
+//                ->setParamter('val', $value)
+//                ->orderBy('t.id', 'ASC')
+//            ;
+//        });
 //    }
 
-//    public function findOneBySomeField($value): ?<?= $entity_class_name ?>
+//    public function findOneBySomeField($value): ?<?= $entity_class_name ?><?= "\n" ?>
 //    {
 //        return $this->createQueryBuilder('t')
 //            ->andWhere('t.exampleField = :val')
