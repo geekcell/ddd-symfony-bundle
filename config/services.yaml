@@ -1,10 +1,4 @@
 services:
-    GeekCell\DddBundle\EventSubscriber\FacadeSetupSubscriber:
-        arguments:
-            - '@kernel'
-        tags:
-            - { name: kernel.event_subscriber }
-
     GeekCell\Ddd\Contracts\Application\CommandBus:
         class: GeekCell\DddBundle\Infrastructure\Messenger\CommandBus
         arguments:
