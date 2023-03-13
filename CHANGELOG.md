@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.5](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.1.4...v1.1.5) (2023-03-13)
+
+
+### Bug Fixes
+
+* Enable custom doctrine types to handle `null` values ([8f2d52c](https://github.com/geekcell/ddd-symfony-bundle/commit/8f2d52c05fb92220c8c74e3e74b97232c6b8633e)), closes [#26](https://github.com/geekcell/ddd-symfony-bundle/issues/26)
+
+
+### Miscellaneous Chores
+
+* Apply fixes from PHP CS Fixer and PHPStan. ([4a9ba6b](https://github.com/geekcell/ddd-symfony-bundle/commit/4a9ba6b6f06d3ab256038551413d93e9b295d1ad))
+
 ## [1.1.4](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.1.3...v1.1.4) (2023-01-20)
 
 
