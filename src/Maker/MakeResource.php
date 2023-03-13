@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\State\ProviderInterface;
+use ApiPlatform\Symfony\Bundle\ApiPlatformBundle;
 use GeekCell\Ddd\Contracts\Application\CommandBus;
 use GeekCell\Ddd\Contracts\Application\QueryBus;
 use GeekCell\DddBundle\Maker\ApiPlatform\ApiPlatformConfigUpdater;
@@ -77,6 +78,9 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
      */
     public function interact(InputInterface $input, ConsoleStyle $io, Command $command): void
     {
+        if (!class_exists(ApiPlatformBundle::class)) {
+            throw new RuntimeCommandException('This command requires Api Platform >2.7 to be installed.');
+        }
     }
 
     /**

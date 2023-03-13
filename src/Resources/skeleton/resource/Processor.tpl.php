@@ -13,7 +13,7 @@ class <?= $class_name ?> implements ProcessorInterface
     /**
     * @inheritDoc
     */
-    public function process($data, Operation $operation, array $uriVariables = [], array $context = [])
+    public function process($data, Operation $operation, array $uriVariables = [], array $context = []): void
     {
     }
 }
