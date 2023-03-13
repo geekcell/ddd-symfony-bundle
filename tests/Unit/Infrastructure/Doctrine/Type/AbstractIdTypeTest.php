@@ -77,6 +77,19 @@ class AbstractIdTypeTest extends TestCase
         $type->convertToDatabaseValue('foo', $platform);
     }
 
+    public function testConvertToDatabaseValueNull(): void
+    {
+        // Given
+        $type = new FooIdType();
+        $platform = Mockery::mock(AbstractPlatform::class);
+
+        // When
+        $result = $type->convertToDatabaseValue(null, $platform);
+
+        // Then
+        $this->assertNull($result);
+    }
+
     public function testConvertToPhpValue(): void
     {
         // Given
@@ -90,5 +103,18 @@ class AbstractIdTypeTest extends TestCase
         // Then
         $this->assertInstanceOf(FooId::class, $result);
         $this->assertSame($intId, $result->getValue());
+    }
+
+    public function testConvertToPhpValueNull(): void
+    {
+        // Given
+        $type = new FooIdType();
+        $platform = Mockery::mock(AbstractPlatform::class);
+
+        // When
+        $result = $type->convertToPHPValue(null, $platform);
+
+        // Then
+        $this->assertNull($result);
     }
 }

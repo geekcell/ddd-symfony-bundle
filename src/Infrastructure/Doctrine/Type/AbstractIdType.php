@@ -17,6 +17,10 @@ abstract class AbstractIdType extends IntegerType
             return $value;
         }
 
+        if ($value === null) {
+            return null;
+        }
+
         if (!$value instanceof Id) {
             throw ConversionException::conversionFailedInvalidType(
                 $value,
@@ -30,6 +34,10 @@ abstract class AbstractIdType extends IntegerType
 
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
+        if ($value === null) {
+            return null;
+        }
+
         $idType = $this->getIdType();
         if (!is_subclass_of($idType, Id::class)) {
             throw ConversionException::conversionFailedUnserialization(
