@@ -21,6 +21,10 @@ abstract class AbstractUuidType extends GuidType
             return $value;
         }
 
+        if ($value === null) {
+            return null;
+        }
+
         if (!$value instanceof Uuid) {
             throw ConversionException::conversionFailedInvalidType(
                 $value,
@@ -38,6 +42,10 @@ abstract class AbstractUuidType extends GuidType
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
+        if ($value === null) {
+            return null;
+        }
+
         $idType = $this->getIdType();
         if (!is_subclass_of($idType, Uuid::class)) {
             throw ConversionException::conversionFailedUnserialization(

@@ -63,6 +63,19 @@ class AbstractUuidTypeTest extends TestCase
         $this->assertSame($uuidString, $result);
     }
 
+    public function testConvertToDatabaseValueNull(): void
+    {
+        // Given
+        $platform = Mockery::mock(AbstractPlatform::class);
+        $type = new FooUuidType();
+
+        // When
+        $result = $type->convertToDatabaseValue(null, $platform);
+
+        // Then
+        $this->assertNull($result);
+    }
+
     public function testConvertToDatabaseValueInvalidType(): void
     {
         // Given
@@ -89,5 +102,18 @@ class AbstractUuidTypeTest extends TestCase
         // Then
         $this->assertInstanceOf(FooUuid::class, $result);
         $this->assertSame($uuidString, $result->getValue());
+    }
+
+    public function testConvertToPhpValueNull(): void
+    {
+        // Given
+        $platform = Mockery::mock(AbstractPlatform::class);
+        $type = new FooUuidType();
+
+        // When
+        $result = $type->convertToPHPValue(null, $platform);
+
+        // Then
+        $this->assertNull($result);
     }
 }
