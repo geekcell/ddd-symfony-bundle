@@ -25,11 +25,16 @@ use Symfony\Bundle\MakerBundle\Util\UseStatementGenerator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 
 final class MakeResource extends AbstractMaker implements InputAwareMakerInterface
 {
     const NAMESPACE_PREFIX = 'Infrastructure\\ApiPlatform\\';
     const CONFIG_PATH = 'config/packages/api_platform.yaml';
+    const CONFIG_PATH_XML = 'config/api_platform/';
+
+    const CONFIG_FLAVOR_ATTRIBUTE = 'attribute';
+    const CONFIG_FLAVOR_XML = 'xml';
 
     public function __construct(
         private FileManager $fileManager,
@@ -63,6 +68,13 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
                 InputArgument::REQUIRED,
                 'The name of the model class to create the resource for (e.g. <fg=yellow>Customer</>). Model must exist already.',
             )
+            ->addOption(
+                'config',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Config flavor to create (attribute|xml).',
+                'attribute'
+            )
         ;
     }
 
@@ -81,6 +93,17 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
         if (!class_exists(ApiPlatformBundle::class)) {
             throw new RuntimeCommandException('This command requires Api Platform >2.7 to be installed.');
         }
+
+        if (false === $input->getOption('config')) {
+            $configFlavor = $io->choice(
+                'Config flavor to create (attribute|xml). (<fg=yellow>%sModel</>)',
+                [
+                    'attribute' => 'PHP attributes',
+                    'xml' => 'XML mapping',
+                ],
+            );
+            $input->setOption('config', $configFlavor);
+        }
     }
 
     /**
@@ -89,6 +112,7 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
         $baseName = $input->getArgument('name');
+        $configFlavor = $input->getOption('config');
 
         $modelClassNameDetails = $generator->createClassNameDetails(
             $baseName,
@@ -106,7 +130,7 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
             'Resource',
         );
 
-        $this->ensureConfig($generator);
+        $this->ensureConfig($generator, $configFlavor);
 
         $providerClassNameDetails = $generator->createClassNameDetails(
             $baseName,
@@ -122,16 +146,19 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
         );
         $this->generateProcessor($processorClassNameDetails, $generator);
 
+        $classesToImport = [$modelClassNameDetails->getFullName()];
+        if ($configFlavor === self::CONFIG_FLAVOR_ATTRIBUTE) {
+            $classesToImport[] = ApiResource::class;
+            $classesToImport[] = $providerClassNameDetails->getFullName();
+            $classesToImport[] = $processorClassNameDetails->getFullName();
+        }
+
         $templateVars = [
-            'use_statements' => new UseStatementGenerator([
-                ApiResource::class,
-                $modelClassNameDetails->getFullName(),
-                $providerClassNameDetails->getFullName(),
-                $processorClassNameDetails->getFullName(),
-            ]),
+            'use_statements' => new UseStatementGenerator($classesToImport),
             'entity_class_name' => $modelClassNameDetails->getShortName(),
             'provider_class_name' => $providerClassNameDetails->getShortName(),
             'processor_class_name' => $processorClassNameDetails->getShortName(),
+            'configure_with_attributes' => $configFlavor === self::CONFIG_FLAVOR_ATTRIBUTE
         ];
 
         $generator->generateClass(
@@ -140,28 +167,37 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
             $templateVars,
         );
 
+        if ($configFlavor === self::CONFIG_FLAVOR_XML) {
+            $targetPath = self::CONFIG_PATH_XML . $classNameDetails->getShortName() . '.xml';
+            $generator->generateFile(
+                $targetPath,
+                __DIR__.'/../Resources/skeleton/resource/ResourceXmlConfig.tpl.php',
+                [
+                    'entity_full_class_name' => $modelClassNameDetails->getFullName(),
+                    'provider_class_name' => $providerClassNameDetails->getFullName(),
+                    'processor_class_name' => $processorClassNameDetails->getFullName(),
+                ]
+            );
+        }
+
         $generator->writeChanges();
 
         $this->writeSuccessMessage($io);
     }
 
     /**
-     * ensure custom resource path is added to config
+     * ensure custom resource path(s) are added to config
      *
      * @param Generator $generator
+     * @param string $configFlavor
      * @return void
      */
-    private function ensureConfig(Generator $generator): void
+    private function ensureConfig(Generator $generator, string $configFlavor): void
     {
         $customResourcePath = '%kernel.project_dir%/src/Infrastructure/ApiPlatform/Resource';
-        if ($this->fileManager->fileExists(self::CONFIG_PATH)) {
-            $newYaml = $this->configUpdater->addCustomPath(
-                $this->fileManager->getFileContents(self::CONFIG_PATH),
-                $customResourcePath
-            );
+        $customConfigPath = '%kernel.project_dir%/' . self::CONFIG_PATH_XML;
 
-            $generator->dumpFile(self::CONFIG_PATH, $newYaml);
-        } else {
+        if (!$this->fileManager->fileExists(self::CONFIG_PATH)) {
             $generator->generateFile(
                 self::CONFIG_PATH,
                 __DIR__ . '/../Resources/skeleton/resource/ApiPlatformConfig.tpl.php',
@@ -169,7 +205,20 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
                     'path' => $customResourcePath,
                 ]
             );
+
+            $generator->writeChanges();
         }
+
+        $newYaml = $this->configUpdater->addCustomPath(
+            $this->fileManager->getFileContents(self::CONFIG_PATH),
+            $customResourcePath
+        );
+
+        if ($configFlavor === self::CONFIG_FLAVOR_XML) {
+            $newYaml = $this->configUpdater->addCustomPath($newYaml, $customConfigPath);
+        }
+
+        $generator->dumpFile(self::CONFIG_PATH, $newYaml);
 
         $generator->writeChanges();
     }

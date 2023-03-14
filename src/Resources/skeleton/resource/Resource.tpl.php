@@ -4,10 +4,12 @@ namespace <?= $namespace; ?>;
 
 <?= $use_statements ?>
 
+<?php if ($configure_with_attributes): ?>
 #[ApiResource(
     provider: <?= $provider_class_name ?>::class,
     processor: <?= $processor_class_name ?>::class,
 )]
+<?php endif; ?>
 final class <?= $class_name ?><?= "\n" ?>
 {
     /**
