@@ -229,3 +229,23 @@ Options:
       --include-query-bus    Add a query bus dependency
       --include-command-bus  Add a command bus dependency
 ```
+
+### Resource
+
+This command can be used to generate an [Api Platform](https://api-platform.com/) resource. Minimum required version is [2.7](https://api-platform.com/docs/core/upgrade-guide/#api-platform-2730) for the PHP attributes support.
+
+#### Command Output
+
+```bash
+Description:
+  Creates a new API Platform resource
+
+Usage:
+  make:ddd:resource [options] [--] [<name>]
+
+Arguments:
+  name            The name of the model class to create the resource for (e.g. Customer). Model must exist already.
+
+Options:
+      --config    Config flavor to create (attribute|xml).
+```

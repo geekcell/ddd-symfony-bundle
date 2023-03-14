@@ -46,16 +46,13 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
      */
     private $templateVariables = [];
 
-
     /**
-     * Constructor.
-     *
      * @param DoctrineConfigUpdater $doctrineUpdater
      * @param FileManager $fileManager
      */
     public function __construct(
-        private DoctrineConfigUpdater $doctrineUpdater,
-        private FileManager $fileManager,
+        private readonly DoctrineConfigUpdater $doctrineUpdater,
+        private readonly FileManager $fileManager,
     ) {}
 
     /**
