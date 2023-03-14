@@ -90,7 +90,10 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
      */
     public function interact(InputInterface $input, ConsoleStyle $io, Command $command): void
     {
-        if (!class_exists(ApiPlatformBundle::class)) {
+        // Check for bundle to make sure API Platform package is installed.
+        // Then check if the new ApiResource class in the Metadata namespace exists.
+        //  -> Was only introduced in v2.7.
+        if (!class_exists(ApiPlatformBundle::class) || !class_exists(ApiResource::class)) {
             throw new RuntimeCommandException('This command requires Api Platform >2.7 to be installed.');
         }
 
