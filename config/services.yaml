@@ -35,6 +35,13 @@ services:
         tags:
             - { name: maker.command }
 
+    GeekCell\DddBundle\Maker\MakeController:
+        class: GeekCell\DddBundle\Maker\MakeController
+        arguments:
+            - '@maker.file_manager'
+        tags:
+            - { name: maker.command }
+
     GeekCell\DddBundle\Maker\Doctrine\DoctrineConfigUpdater:
         class: GeekCell\DddBundle\Maker\Doctrine\DoctrineConfigUpdater
         public: false
