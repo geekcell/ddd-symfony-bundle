@@ -2,7 +2,7 @@
     "name": "geekcell/ddd-bundle",
     "description": "A bundle for pragmatic domain driven design in Symfony.",
     "type": "symfony-bundle",
-    "version": "1.1.4",
+    "version": "1.1.5",
     "license": "MIT",
     "authors": [
         {
@@ -11,15 +11,26 @@
         }
     ],
     "require": {
-        "beberlei/assert": "^3.3",
+        "doctrine/orm": "^2.12",
+        "geekcell/container-facade": "^1.0",
         "geekcell/ddd": "^1.1.0",
         "symfony/config": "^6.0",
         "symfony/dependency-injection": "^6.0",
         "symfony/event-dispatcher": "^6.0",
         "symfony/http-kernel": "^6.0",
         "symfony/messenger": "^6.0",
-        "doctrine/orm": "^2.12",
-        "symfony/string": "^6.2"
+        "symfony/string": "^6.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.13",
+        "mockery/mockery": "^1.5",
+        "phpstan/phpstan": "^1.9",
+        "phpstan/phpstan-mockery": "^1.1",
+        "phpunit/phpunit": "^9.5",
+        "symfony/framework-bundle": "^6.0",
+        "symfony/yaml": "^6.0",
+        "symfony/filesystem": "^6.0",
+        "symfony/maker-bundle": "^1.48"
     },
     "autoload": {
         "psr-4": {
@@ -30,14 +41,6 @@
         "psr-4": {
             "GeekCell\\DddBundle\\Tests\\": "tests/"
         }
-    },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.13",
-        "mockery/mockery": "^1.5",
-        "phpstan/phpstan": "^1.9",
-        "phpstan/phpstan-mockery": "^1.1",
-        "phpunit/phpunit": "^9.5",
-        "symfony/maker-bundle": "^1.48"
     },
     "scripts": {
         "gc:tests": "phpunit --testdox --colors=always",

@@ -14,7 +14,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * This trait provides methods to dispatch domain events.
  *
  * @package GeekCell\DddBundle\Support\Traits
- * @codeCoverageIgnore
  */
 trait DispatchableTrait
 {
@@ -48,7 +47,6 @@ trait DispatchableTrait
     {
         if (!isset($this->eventDispatcher)) {
             $eventDispatcher = EventDispatcher::getFacadeRoot();
-            Assertion::notNull($eventDispatcher, 'EventDispatcher is not set');
 
             /** @var EventDispatcherInterface $eventDispatcher */
             $this->eventDispatcher = $eventDispatcher;

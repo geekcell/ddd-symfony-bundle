@@ -2,31 +2,75 @@
 
 namespace Tests\Unit\Support\Traits;
 
-use GeekCell\DddBundle\Support\Facades\EventDispatcher;
+use GeekCell\Ddd\Contracts\Domain\Event as DomainEvent;
+use GeekCell\DddBundle\Support\Facades\EventDispatcher as EventDispatcherFacade;
 use GeekCell\DddBundle\Support\Traits\DispatchableTrait;
+use Mockery;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\EventDispatcher\EventDispatcher as SymfonyEventDispatcher;
+use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class DispatchableTraitTest extends TestCase
 {
     use DispatchableTrait;
 
+    /**
+     * @var string
+     */
+    public const SERVICE_ID = 'event_dispatcher';
+
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->container = new Container();
+        EventDispatcherFacade::setContainer($this->container);
+    }
+
     public function tearDown(): void
     {
         parent::tearDown();
-        EventDispatcher::clear();
+        EventDispatcherFacade::clear();
     }
 
-    public function testGetDefaultEventDispatcher(): void
+    public function testGetEventDispatcher(): void
     {
         // Given
-        $dispatcher = new SymfonyEventDispatcher();
-        EventDispatcher::swap($dispatcher);
+        $dispatcher = new EventDispatcher();
+        $this->container->set(self::SERVICE_ID, $dispatcher);
 
         // When
-        $default = $this->getEventDispatcher();
+        $result = $this->getEventDispatcher();
 
         // Then
-        $this->assertSame($dispatcher, $default);
+        $this->assertSame($dispatcher, $result);
+    }
+
+    public function testDispatch(): void
+    {
+        // Given
+        $this->container->set(self::SERVICE_ID, new EventDispatcher());
+
+        $event = new class () implements DomainEvent {};
+
+        /** @var Mockery\MockInterface $dispatcherMock */
+        $dispatcherMock = EventDispatcherFacade::swapMock();
+        $dispatcherMock
+            ->shouldReceive('dispatch')
+            ->once()
+            ->with($event)
+        ;
+
+        // When
+        $this->dispatch($event);
+
+        // Then
+        $this->addToAssertionCount(1);
     }
 }
