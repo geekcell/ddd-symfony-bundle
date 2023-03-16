@@ -21,6 +21,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use function Symfony\Component\String\u;
 
 final class MakeController extends AbstractMaker implements InputAwareMakerInterface
 {
@@ -124,13 +125,7 @@ final class MakeController extends AbstractMaker implements InputAwareMakerInter
         $routeName = lcfirst($input->getArgument('name'));
         $templateVars = [
             'route_name' => $routeName,
-            'route_name_snake' => strtolower(
-                preg_replace(
-                    ["/([A-Z]+)/", "/_([A-Z]+)([A-Z][a-z])/"],
-                    ["_$1", "_$1_$2"],
-                    $routeName
-                )
-            ),
+            'route_name_snake' => u($routeName)->snake()->lower(),
             'dependencies' => []
         ];
 
