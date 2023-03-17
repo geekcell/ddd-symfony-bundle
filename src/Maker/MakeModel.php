@@ -7,6 +7,7 @@ namespace GeekCell\DddBundle\Maker;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use GeekCell\Ddd\Contracts\Domain\Repository;
 use GeekCell\Ddd\Domain\ValueObject\Id;
 use GeekCell\Ddd\Domain\ValueObject\Uuid;
 use GeekCell\DddBundle\Domain\AggregateRoot;
@@ -29,6 +30,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use GeekCell\DddBundle\Infrastructure\Doctrine\Repository as OrmRepository;
 
 use function Symfony\Component\String\u;
 
@@ -211,10 +213,10 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
 
         $this->templateVariables['class_name'] = $modelClassNameDetails->getShortName();
 
-        $this->generateIdentity($modelName, $input, $io, $generator);
+        $identityClassNameDetails = $this->generateIdentity($modelName, $input, $io, $generator);
         $this->generateEntityMappings($modelClassNameDetails, $input, $io, $generator);
-        $this->generateEntity($modelClassNameDetails, $input, $io, $generator);
-        $this->generateRepository($modelClassNameDetails, $input, $io, $generator);
+        $this->generateEntity($modelClassNameDetails, $input, $generator);
+        $this->generateRepository($modelClassNameDetails, $identityClassNameDetails, $input, $generator);
 
         $this->writeSuccessMessage($io);
     }
@@ -226,15 +228,16 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
      * @param InputInterface $input
      * @param ConsoleStyle $io
      * @param Generator $generator
+     * @return ClassNameDetails|null
      */
     private function generateIdentity(
         string $modelName,
         InputInterface $input,
         ConsoleStyle $io,
         Generator $generator
-    ): void {
+    ): ?ClassNameDetails {
         if (!$this->shouldGenerateIdentity($input)) {
-            return;
+            return null;
         }
 
         // 1. Generate the identity value object.
@@ -281,7 +284,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         $this->templateVariables['identity_class'] = $identityClassNameDetails->getShortName();
 
         if (!$this->shouldGenerateEntity($input)) {
-            return;
+            return null;
         }
 
         // 2. Generate custom Doctrine mapping type for the identity.
@@ -323,7 +326,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         $configPath = 'config/packages/doctrine.yaml';
         if (!$this->fileManager->fileExists($configPath)) {
             $io->error(sprintf('Doctrine configuration at path "%s" does not exist.', $configPath));
-            return;
+            return null;
         }
 
         // 2.1 Add the custom mapping type to the Doctrine configuration.
@@ -341,6 +344,8 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
 
         // Write out the changes.
         $generator->writeChanges();
+
+        return $identityClassNameDetails;
     }
 
     /**
@@ -432,13 +437,11 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
      *
      * @param ClassNameDetails $modelClassNameDetails
      * @param InputInterface $input
-     * @param ConsoleStyle $io
      * @param Generator $generator
      */
     private function generateEntity(
         ClassNameDetails $modelClassNameDetails,
         InputInterface $input,
-        ConsoleStyle $io,
         Generator $generator
     ): void {
         if ($input->getOption('aggregate-root')) {
@@ -462,33 +465,87 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
     /**
      * Generate model repository
      *
+     * @param ClassNameDetails $modelClassNameDetails
+     * @param ClassNameDetails $identityClassNameDetails
      * @param InputInterface $input
-     * @param ConsoleStyle $io
      * @param Generator $generator
+     * @throws \Exception
      */
     private function generateRepository(
         ClassNameDetails $modelClassNameDetails,
+        ClassNameDetails $identityClassNameDetails,
         InputInterface $input,
-        ConsoleStyle $io,
         Generator $generator
     ): void {
-        $classNameDetails = $generator->createClassNameDetails(
+        $interfaceNameDetails = $generator->createClassNameDetails(
             $input->getArgument('name'),
-            'Repository\\',
+            'Domain\\Repository\\',
             'Repository',
         );
 
+        $this->generateRepositoryInterface(
+            $interfaceNameDetails,
+            $modelClassNameDetails,
+            $identityClassNameDetails,
+            $generator
+        );
+
+        $implementationNameDetails = $generator->createClassNameDetails(
+            $input->getArgument('name'),
+            'Infrastructure\\Doctrine\\ORM\\Repository\\',
+            'Repository',
+        );
+
+        $interfaceClassName = $interfaceNameDetails->getShortName() . 'Interface';
         $templateVars = [
             'use_statements' => new UseStatementGenerator([
                 $modelClassNameDetails->getFullName(),
-                ServiceEntityRepository::class,
+                $identityClassNameDetails->getFullName(),
                 ManagerRegistry::class,
-                QueryBuilder::class
+                [ OrmRepository::class => 'OrmRepository' ],
+                [ $interfaceNameDetails->getFullName() => $interfaceClassName ],
             ]),
-            'entity_class_name' => $modelClassNameDetails->getShortName()
+            'interface_class_name' => $interfaceClassName,
+            'model_class_name' => $modelClassNameDetails->getShortName(),
+            'identity_class_name' => $identityClassNameDetails->getShortName()
         ];
 
         $templatePath = __DIR__.'/../Resources/skeleton/model/Repository.tpl.php';
+        $generator->generateClass(
+            $implementationNameDetails->getFullName(),
+            $templatePath,
+            $templateVars,
+        );
+
+        $generator->writeChanges();
+    }
+
+    /**
+     * Generate model repository
+     *
+     * @param ClassNameDetails $classNameDetails
+     * @param ClassNameDetails $entityClassNameDetails
+     * @param ClassNameDetails $identityClassNameDetails
+     * @param Generator $generator
+     * @throws \Exception
+     */
+    private function generateRepositoryInterface(
+        ClassNameDetails $classNameDetails,
+        ClassNameDetails $modelClassNameDetails,
+        ClassNameDetails $identityClassNameDetails,
+        Generator        $generator
+    ): void {
+        $templateVars = [
+            'use_statements' => new UseStatementGenerator([
+                $modelClassNameDetails->getFullName(),
+                $identityClassNameDetails->getFullName(),
+                Repository::class,
+            ]),
+            'model_class_name' => $modelClassNameDetails->getShortName(),
+            'identity_class_name' => $identityClassNameDetails->getShortName()
+        ];
+
+        $templatePath = __DIR__.'/../Resources/skeleton/model/RepositoryInterface.tpl.php';
         $generator->generateClass(
             $classNameDetails->getFullName(),
             $templatePath,
