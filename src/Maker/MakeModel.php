@@ -502,6 +502,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
                 $modelClassNameDetails->getFullName(),
                 $identityClassNameDetails->getFullName(),
                 ManagerRegistry::class,
+                QueryBuilder::class,
                 [ OrmRepository::class => 'OrmRepository' ],
                 [ $interfaceNameDetails->getFullName() => $interfaceClassName ],
             ]),
