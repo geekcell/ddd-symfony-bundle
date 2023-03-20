@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Maker;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
@@ -31,7 +32,7 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
 {
     const NAMESPACE_PREFIX = 'Infrastructure\\ApiPlatform\\';
     const CONFIG_PATH = 'config/packages/api_platform.yaml';
-    const CONFIG_PATH_XML = 'config/api_platform/';
+    const CONFIG_PATH_XML = 'src/Infrastructure/ApiPlatform/Config';
 
     const CONFIG_FLAVOR_ATTRIBUTE = 'attribute';
     const CONFIG_FLAVOR_XML = 'xml';
@@ -127,6 +128,8 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
             throw new RuntimeCommandException("Could not find model {$modelClassNameDetails->getFullName()}!");
         }
 
+        $identityClassNameDetails = $this->ensureIdentity($modelClassNameDetails, $generator);
+
         $classNameDetails = $generator->createClassNameDetails(
             $baseName,
             self::NAMESPACE_PREFIX . 'Resource',
@@ -152,16 +155,19 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
         $classesToImport = [$modelClassNameDetails->getFullName()];
         if ($configFlavor === self::CONFIG_FLAVOR_ATTRIBUTE) {
             $classesToImport[] = ApiResource::class;
+            $classesToImport[] = ApiProperty::class;
             $classesToImport[] = $providerClassNameDetails->getFullName();
             $classesToImport[] = $processorClassNameDetails->getFullName();
         }
 
+        $configureWithUuid = str_contains(strtolower($identityClassNameDetails->getShortName()), 'uuid');
         $templateVars = [
             'use_statements' => new UseStatementGenerator($classesToImport),
             'entity_class_name' => $modelClassNameDetails->getShortName(),
             'provider_class_name' => $providerClassNameDetails->getShortName(),
             'processor_class_name' => $processorClassNameDetails->getShortName(),
-            'configure_with_attributes' => $configFlavor === self::CONFIG_FLAVOR_ATTRIBUTE
+            'configure_with_attributes' => $configFlavor === self::CONFIG_FLAVOR_ATTRIBUTE,
+            'configure_with_uuid' => $configureWithUuid,
         ];
 
         $generator->generateClass(
@@ -171,7 +177,7 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
         );
 
         if ($configFlavor === self::CONFIG_FLAVOR_XML) {
-            $targetPath = self::CONFIG_PATH_XML . $classNameDetails->getShortName() . '.xml';
+            $targetPath = self::CONFIG_PATH_XML . '/' . $classNameDetails->getShortName() . '.xml';
             $generator->generateFile(
                 $targetPath,
                 __DIR__.'/../Resources/skeleton/resource/ResourceXmlConfig.tpl.php',
@@ -179,6 +185,7 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
                     'entity_full_class_name' => $modelClassNameDetails->getFullName(),
                     'provider_class_name' => $providerClassNameDetails->getFullName(),
                     'processor_class_name' => $processorClassNameDetails->getFullName(),
+                    'identifier_field_name' => $configureWithUuid ? 'uuid' : 'id',
                 ]
             );
         }
@@ -272,5 +279,35 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
         );
 
         $generator->writeChanges();
+    }
+
+    /**
+     * @param ClassNameDetails $modelClassNameDetails
+     * @param Generator $generator
+     * @return ClassNameDetails
+     */
+    private function ensureIdentity(ClassNameDetails $modelClassNameDetails, Generator $generator): ClassNameDetails
+    {
+        $idEntity = $generator->createClassNameDetails(
+            $modelClassNameDetails->getShortName(),
+            'Domain\\Model\\ValueObject\\Identity',
+            'Id',
+        );
+
+        if (class_exists($idEntity->getFullName())) {
+            return $idEntity;
+        }
+
+        $uuidEntity = $generator->createClassNameDetails(
+            $modelClassNameDetails->getShortName(),
+            'Domain\\Model\\ValueObject\\Identity',
+            'Uuid',
+        );
+
+        if (class_exists($uuidEntity->getFullName())) {
+            return $uuidEntity;
+        }
+
+        throw new RuntimeCommandException("Could not find model identity for {$modelClassNameDetails->getFullName()}. Checked for id class ({$idEntity->getFullName()}) and uuid class ({$uuidEntity->getFullName()})!");
     }
 }
