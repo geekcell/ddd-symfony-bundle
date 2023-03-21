@@ -16,7 +16,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 
-abstract class AbstractBaseMakeQueryCommand extends AbstractMaker implements InputAwareMakerInterface
+abstract class AbstractBaseMakerCQRS extends AbstractMaker implements InputAwareMakerInterface
 {
     /**
      * Should return the target for the extending command (query|command)
@@ -27,7 +27,7 @@ abstract class AbstractBaseMakeQueryCommand extends AbstractMaker implements Inp
     /**
      * Should return an array of classes to import when generating the entity
      * @return string[]
-     */
+     */g
     abstract function getEntityUseStatements(): array;
 
     /**

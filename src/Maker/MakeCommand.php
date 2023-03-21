@@ -9,7 +9,7 @@ use GeekCell\Ddd\Contracts\Application\CommandHandler;
 use GeekCell\Ddd\Domain\Collection;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-final class MakeCommand extends AbstractBaseMakeQueryCommand
+final class MakeCommand extends AbstractBaseMakerCQRS
 {
     const TARGET = 'command';
 

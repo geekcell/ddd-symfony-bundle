@@ -9,7 +9,7 @@ use GeekCell\Ddd\Contracts\Application\QueryHandler;
 use GeekCell\Ddd\Domain\Collection;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-final class MakeQuery extends AbstractBaseMakeQueryCommand
+final class MakeQuery extends AbstractBaseMakerCQRS
 {
     const TARGET = 'query';
 
