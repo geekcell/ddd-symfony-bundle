@@ -33,6 +33,13 @@ final class <?= $class_name ?><?= "\n" ?>
     */
     public static function create(<?= $entity_class_name ?> $model): static
     {
-        return new static();
+        return new static(
+<?php if ($configure_with_uuid): ?>
+            strval($model->getUuid()),
+<?php else: ?>
+            intval($model->getId()),
+<?php endif; ?>
+            // TODO: Initialize further ...
+        );
     }
 }
