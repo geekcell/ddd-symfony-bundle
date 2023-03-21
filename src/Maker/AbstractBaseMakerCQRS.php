@@ -27,7 +27,7 @@ abstract class AbstractBaseMakerCQRS extends AbstractMaker implements InputAware
     /**
      * Should return an array of classes to import when generating the entity
      * @return string[]
-     */g
+     */
     abstract function getEntityUseStatements(): array;
 
     /**
