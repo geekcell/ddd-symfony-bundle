@@ -177,14 +177,24 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
         );
 
         if ($configFlavor === self::CONFIG_FLAVOR_XML) {
-            $targetPath = self::CONFIG_PATH_XML . '/' . $classNameDetails->getShortName() . '.xml';
+            $targetPathResourceConfig = self::CONFIG_PATH_XML . '/' . $classNameDetails->getShortName() . '.xml';
             $generator->generateFile(
-                $targetPath,
+                $targetPathResourceConfig,
                 __DIR__.'/../Resources/skeleton/resource/ResourceXmlConfig.tpl.php',
                 [
-                    'entity_full_class_name' => $modelClassNameDetails->getFullName(),
+                    'class_name' => $classNameDetails->getFullName(),
+                    'entity_short_class_name' => $modelClassNameDetails->getShortName(),
                     'provider_class_name' => $providerClassNameDetails->getFullName(),
                     'processor_class_name' => $processorClassNameDetails->getFullName(),
+                ]
+            );
+
+            $targetPathPropertiesConfig = self::CONFIG_PATH_XML . '/' . $classNameDetails->getShortName() . 'Properties.xml';
+            $generator->generateFile(
+                $targetPathPropertiesConfig,
+                __DIR__.'/../Resources/skeleton/resource/PropertiesXmlConfig.tpl.php',
+                [
+                    'class_name' => $classNameDetails->getFullName(),
                     'identifier_field_name' => $configureWithUuid ? 'uuid' : 'id',
                 ]
             );

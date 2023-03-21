@@ -4,7 +4,8 @@
            xsi:schemaLocation="https://api-platform.com/schema/metadata/resources-3.0
         https://api-platform.com/schema/metadata/resources-3.0.xsd">
     <resource
-        class="<?= $entity_full_class_name ?>"
+        class="<?= $class_name ?>"
+        shortName="<?= $entity_short_class_name ?>"
         provider="<?= $provider_class_name ?>"
         processor="<?= $processor_class_name ?>"
     />

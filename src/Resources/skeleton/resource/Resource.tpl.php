@@ -12,14 +12,17 @@ namespace <?= $namespace; ?>;
 <?php endif; ?>
 final class <?= $class_name ?><?= "\n" ?>
 {
+    public function __construct(
 <?php if ($configure_with_attributes): ?>
-    #[ApiProperty(identifier: true)]
+        #[ApiProperty(identifier: true)]
 <?php endif; ?>
 <?php if ($configure_with_uuid): ?>
-    public string $uuid;
+        public string $uuid,
 <?php else: ?>
-    public int $id;
+        public int $id,
 <?php endif; ?>
+        // TODO: Add more properties ...
+    ) {}
 
     /**
     * Convenience factory method to create the resource from an instance of the <?= $entity_class_name ?> model
