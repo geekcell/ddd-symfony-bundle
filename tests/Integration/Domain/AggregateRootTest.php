@@ -7,12 +7,19 @@ namespace GeekCell\DddBundle\Tests\Integration\Domain;
 use GeekCell\DddBundle\Tests\Integration\Fixtures\Domain\Event\UserStateChangedEvent;
 use GeekCell\DddBundle\Tests\Integration\Fixtures\Domain\Event\UserUpdatedEvent;
 use GeekCell\DddBundle\Tests\Integration\Fixtures\Domain\Model\User;
+use GeekCell\DddBundle\Tests\Integration\Fixtures\TestKernel;
 use GeekCell\Facade\Facade;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class AggregateRootTest extends KernelTestCase
 {
+    protected static function createKernel(array $options = []): KernelInterface
+    {
+        return new TestKernel('test', true);
+    }
+
     public function setUp(): void
     {
         parent::setUp();
