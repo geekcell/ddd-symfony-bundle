@@ -15,11 +15,6 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class AggregateRootTest extends KernelTestCase
 {
-    protected static function createKernel(array $options = []): KernelInterface
-    {
-        return new TestKernel('test', true);
-    }
-
     public function setUp(): void
     {
         parent::setUp();
