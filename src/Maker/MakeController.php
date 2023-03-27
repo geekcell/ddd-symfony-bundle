@@ -64,14 +64,14 @@ final class MakeController extends AbstractMaker implements InputAwareMakerInter
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Add a query bus dependency.',
-                false
+                null
             )
             ->addOption(
                 'include-command-bus',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Add a command bus dependency.',
-                false
+                null
             )
         ;
     }
@@ -88,7 +88,7 @@ final class MakeController extends AbstractMaker implements InputAwareMakerInter
      */
     public function interact(InputInterface $input, ConsoleStyle $io, Command $command): void
     {
-        if (false === $input->getOption('include-query-bus')) {
+        if (null === $input->getOption('include-query-bus')) {
             $includeQueryBus = $io->confirm(
                 'Do you want to add a query bus dependency?',
                 false,
@@ -96,7 +96,7 @@ final class MakeController extends AbstractMaker implements InputAwareMakerInter
             $input->setOption('include-query-bus', $includeQueryBus);
         }
 
-        if (false === $input->getOption('include-command-bus')) {
+        if (null === $input->getOption('include-command-bus')) {
             $includeCommandBus = $io->confirm(
                 'Do you want to add a command bus dependency?',
                 false,

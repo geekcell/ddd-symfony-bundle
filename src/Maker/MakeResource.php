@@ -74,7 +74,7 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Config flavor to create (attribute|xml).',
-                'attribute'
+                null
             )
         ;
     }
@@ -105,6 +105,7 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
                     'attribute' => 'PHP attributes',
                     'xml' => 'XML mapping',
                 ],
+                'attribute'
             );
             $input->setOption('config', $configFlavor);
         }

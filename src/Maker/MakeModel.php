@@ -89,24 +89,28 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Marks the model as aggregate root',
+                null
             )
             ->addOption(
                 'entity',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Use this model as Doctrine entity',
+                null
             )
             ->addOption(
                 'with-identity',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Whether an identity value object should be created',
+                null
             )
             ->addOption(
                 'with-suffix',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Adds the suffix "Model" to the model class name',
+                null
             )
         ;
     }
@@ -135,7 +139,8 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         /** @var string $modelName */
         $modelName = $input->getArgument('name');
 
-        if (false === $input->getOption('with-suffix')) {
+        $useSuffix = $input->getOption('with-suffix');
+        if (null === $useSuffix) {
             $useSuffix = $io->confirm(
                 sprintf(
                     'Do you want to suffix the model class name? (<fg=yellow>%sModel</>)',
@@ -146,7 +151,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
             $input->setOption('with-suffix', $useSuffix);
         }
 
-        if (false === $input->getOption('aggregate-root')) {
+        if (null === $input->getOption('aggregate-root')) {
             $asAggregateRoot = $io->confirm(
                 sprintf(
                     'Do you want create <fg=yellow>%s%s</> as aggregate root?',
