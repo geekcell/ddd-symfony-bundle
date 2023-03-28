@@ -89,18 +89,22 @@ N/A
 #### Example Usage
 
 ```php
-use GeekCell\Ddd\Contracts\Domain\Event as DomainEvent;
-use GeekCell\DddBundle\Domain\AggregateRoot;
 
-class OrderPlacedEvent implements DomainEvent
+// src/Domain/Event/OrderPlacedEvent.php
+
+use GeekCell\Ddd\Contracts\Domain\Event as DomainEvent;
+
+readonly class OrderPlacedEvent implements DomainEvent
 {
     public function __construct(
-        private readonly Order $order,
+        public Order $order,
     ) {
     }
-
-    // Getters etc.
 }
+
+// src/Domain/Model/Order.php
+
+use GeekCell\DddBundle\Domain\AggregateRoot;
 
 class Order extends AggregateRoot
 {
@@ -111,6 +115,8 @@ class Order extends AggregateRoot
 
     // ...
 }
+
+// Actual usage ...
 
 $order = new Order( /* ... */ );
 $order->save();
