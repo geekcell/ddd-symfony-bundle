@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.2.0...v1.2.1) (2023-03-28)
+
+
+### Miscellaneous Chores
+
+* **ci:** Sonar ([#31](https://github.com/geekcell/ddd-symfony-bundle/issues/31)) ([99e1931](https://github.com/geekcell/ddd-symfony-bundle/commit/99e19313ad89c365b0245baa468852fe12ec5326))
+
 ## [1.2.0](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.1.5...v1.2.0) (2023-03-28)
 
 
