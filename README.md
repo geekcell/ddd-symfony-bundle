@@ -31,6 +31,16 @@ In order to use them in your Symfony project, you need to require it with compos
 composer require symfony/maker-bundle
 ```
 
+### Available Commands
+
+```bash
+  make:ddd:command            Creates a new command class and handler
+  make:ddd:controller         Creates a new controller class
+  make:ddd:model              Creates a new domain model class
+  make:ddd:query              Creates a new query class and handler
+  make:ddd:resource           Creates a new API Platform resource
+```
+
 ## Building Blocks
 
 ### Model & Repository
