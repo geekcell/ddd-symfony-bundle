@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.1.5...v1.2.0) (2023-03-28)
+
+
+### Features
+
+* release ([#29](https://github.com/geekcell/ddd-symfony-bundle/issues/29)) ([6140643](https://github.com/geekcell/ddd-symfony-bundle/commit/614064397a8818f58c6bdc07c6d6a4a1b3ca5a6e))
+
 ## [1.1.5](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.1.4...v1.1.5) (2023-03-13)
 
 
