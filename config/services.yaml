@@ -10,3 +10,44 @@ services:
         arguments:
             - '@Symfony\Component\Messenger\MessageBusInterface'
         public: true
+
+    GeekCell\DddBundle\Maker\MakeModel:
+        class: GeekCell\DddBundle\Maker\MakeModel
+        arguments:
+            - '@GeekCell\DddBundle\Maker\Doctrine\DoctrineConfigUpdater'
+            - '@maker.file_manager'
+        tags:
+            - { name: maker.command }
+
+    GeekCell\DddBundle\Maker\MakeQuery:
+        class: GeekCell\DddBundle\Maker\MakeQuery
+        tags:
+            - { name: maker.command }
+
+    GeekCell\DddBundle\Maker\MakeCommand:
+        class: GeekCell\DddBundle\Maker\MakeCommand
+        tags:
+            - { name: maker.command }
+
+    GeekCell\DddBundle\Maker\MakeController:
+        class: GeekCell\DddBundle\Maker\MakeController
+        arguments:
+            - '@maker.file_manager'
+        tags:
+            - { name: maker.command }
+
+    GeekCell\DddBundle\Maker\MakeResource:
+        class: GeekCell\DddBundle\Maker\MakeResource
+        arguments:
+            - '@maker.file_manager'
+            - '@GeekCell\DddBundle\Maker\Doctrine\ApiPlatformConfigUpdator'
+        tags:
+            - { name: maker.command }
+
+    GeekCell\DddBundle\Maker\Doctrine\DoctrineConfigUpdater:
+        class: GeekCell\DddBundle\Maker\Doctrine\DoctrineConfigUpdater
+        public: false
+
+    GeekCell\DddBundle\Maker\Doctrine\ApiPlatformConfigUpdator:
+        class: GeekCell\DddBundle\Maker\ApiPlatform\ApiPlatformConfigUpdater
+        public: false

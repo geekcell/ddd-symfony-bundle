@@ -29,11 +29,12 @@
         "phpunit/phpunit": "^9.5",
         "symfony/framework-bundle": "^6.0",
         "symfony/yaml": "^6.0",
-        "symfony/filesystem": "^6.0"
+        "symfony/filesystem": "^6.0",
+        "symfony/maker-bundle": "^1.48"
     },
     "autoload": {
         "psr-4": {
-            "GeekCell\\DddBundle\\": "src"
+            "GeekCell\\DddBundle\\": "src/"
         }
     },
     "autoload-dev": {

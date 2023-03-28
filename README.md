@@ -153,3 +153,99 @@ class Logger extends Facade
 ```
 
 Although facades are better testable than regular singletons, it is highly recommended to only use them sparringly and always prefer normal dependency injection when possible.
+
+## Generator Commands
+
+This bundle adds several [maker bundle](https://symfony.com/bundles/SymfonyMakerBundle/current/index.html) commands to generate commonly used components.
+
+### Model / Repository
+
+This command can be used to generate:
+
+- The domain model class.
+- A repository class for the model.
+- The model's identity class as value object (optional).
+- A Doctrine database entity configuration, either as annotation or separate config file (optional).
+- A custom Doctrine type for the model's identity class (optional).
+
+#### Command Output
+
+```bash
+Description:
+  Creates a new domain model class
+
+Usage:
+  make:ddd:model [options] [--] [<name>]
+
+Arguments:
+  name                               The name of the model class (e.g. Customer)
+
+Options:
+      --aggregate-root               Marks the model as aggregate root
+      --entity=ENTITY                Use this model as Doctrine entity
+      --with-identity=WITH-IDENTITY  Whether an identity value object should be created
+      --with-suffix                  Adds the suffix "Model" to the model class name
+```
+
+### Query / Command
+
+These commands can be used to generate:
+
+- A query and query handler class.
+- A command and command handler class.
+
+The query / command generated is just an empty class. The handler class is registered as a message handler for the configured [Symfony Messenger](https://symfony.com/doc/current/messenger.html).
+
+#### Command Output
+
+```bash
+Description:
+  Creates a new query|command class and handler
+
+Usage:
+  make:ddd:query|command [<name>]
+
+Arguments:
+  name                     The name of the query|command class (e.g. Customer)
+```
+
+### Controller
+
+This command can be used to generate a controller with optional `QueryBus` and `CommandBus` dependencies.
+
+#### Command Output
+
+```bash
+Description:
+  Creates a new controller class
+
+Usage:
+  make:ddd:controller [options] [--] [<name>]
+
+Arguments:
+  name                       The name of the model class (e.g. Customer)
+
+Options:
+      --include-query-bus    Add a query bus dependency
+      --include-command-bus  Add a command bus dependency
+```
+
+### Resource
+
+This command can be used to generate an [Api Platform](https://api-platform.com/) resource. Minimum required version is [2.7](https://api-platform.com/docs/core/upgrade-guide/#api-platform-2730) for the PHP attributes support.
+
+#### Command Output
+
+```bash
+Description:
+  Creates a new API Platform resource
+
+Usage:
+  make:ddd:resource [options] [--] [<name>]
+
+Arguments:
+  name            The name of the model class to create the resource for (e.g. Customer). Model must exist already.
+
+Options:
+      --config    Config flavor to create (attribute|xml).
+```
