@@ -221,7 +221,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         $identityClassNameDetails = $this->generateIdentity($modelName, $input, $io, $generator);
         $this->generateEntityMappings($modelClassNameDetails, $input, $io, $generator);
         $this->generateEntity($modelClassNameDetails, $input, $generator);
-        $this->generateRepository($modelClassNameDetails, $identityClassNameDetails, $input, $generator);
+        $this->generateRepository($generator, $input, $modelClassNameDetails, $identityClassNameDetails);
 
         $this->writeSuccessMessage($io);
     }
@@ -423,9 +423,9 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
                     [
                         'model_class' => $modelClassNameDetails->getFullName(),
                         'has_identity' => $hasIdentity,
-                        'type_name' => $this->templateVariables['type_name'],
+                        'type_name' => $hasIdentity ?? $this->templateVariables['type_name'],
                         'table_name' => $tableName,
-                        'identity_column_name' => $this->templateVariables['identity_type'],
+                        'identity_column_name' => $hasIdentity ?? $this->templateVariables['identity_type'],
                     ],
                 );
             } catch (YamlManipulationFailedException $e) {
@@ -470,17 +470,16 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
     /**
      * Generate model repository
      *
-     * @param ClassNameDetails $modelClassNameDetails
-     * @param ClassNameDetails $identityClassNameDetails
-     * @param InputInterface $input
      * @param Generator $generator
-     * @throws \Exception
+     * @param InputInterface $input
+     * @param ClassNameDetails $modelClassNameDetails
+     * @param ?ClassNameDetails $identityClassNameDetails
      */
     private function generateRepository(
-        ClassNameDetails $modelClassNameDetails,
-        ClassNameDetails $identityClassNameDetails,
+        Generator $generator,
         InputInterface $input,
-        Generator $generator
+        ClassNameDetails $modelClassNameDetails,
+        ?ClassNameDetails $identityClassNameDetails,
     ): void {
         $interfaceNameDetails = $generator->createClassNameDetails(
             $input->getArgument('name'),
@@ -489,10 +488,10 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         );
 
         $this->generateRepositoryInterface(
+            $generator,
             $interfaceNameDetails,
             $modelClassNameDetails,
             $identityClassNameDetails,
-            $generator
         );
 
         $implementationNameDetails = $generator->createClassNameDetails(
@@ -503,17 +502,17 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
 
         $interfaceClassName = $interfaceNameDetails->getShortName() . 'Interface';
         $templateVars = [
-            'use_statements' => new UseStatementGenerator([
+            'use_statements' => new UseStatementGenerator(array_filter([
                 $modelClassNameDetails->getFullName(),
-                $identityClassNameDetails->getFullName(),
+                $identityClassNameDetails?->getFullName(),
                 ManagerRegistry::class,
                 QueryBuilder::class,
                 [ OrmRepository::class => 'OrmRepository' ],
                 [ $interfaceNameDetails->getFullName() => $interfaceClassName ],
-            ]),
+            ])),
             'interface_class_name' => $interfaceClassName,
             'model_class_name' => $modelClassNameDetails->getShortName(),
-            'identity_class_name' => $identityClassNameDetails->getShortName()
+            'identity_class_name' => $identityClassNameDetails?->getShortName()
         ];
 
         $templatePath = __DIR__.'/../Resources/skeleton/model/Repository.tpl.php';
@@ -529,26 +528,26 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
     /**
      * Generate model repository
      *
-     * @param ClassNameDetails $classNameDetails
-     * @param ClassNameDetails $entityClassNameDetails
-     * @param ClassNameDetails $identityClassNameDetails
      * @param Generator $generator
+     * @param ClassNameDetails $classNameDetails
+     * @param ClassNameDetails $modelClassNameDetails
+     * @param ?ClassNameDetails $identityClassNameDetails
      * @throws \Exception
      */
     private function generateRepositoryInterface(
+        Generator        $generator,
         ClassNameDetails $classNameDetails,
         ClassNameDetails $modelClassNameDetails,
-        ClassNameDetails $identityClassNameDetails,
-        Generator        $generator
+        ?ClassNameDetails $identityClassNameDetails,
     ): void {
         $templateVars = [
-            'use_statements' => new UseStatementGenerator([
+            'use_statements' => new UseStatementGenerator(array_filter([
                 $modelClassNameDetails->getFullName(),
-                $identityClassNameDetails->getFullName(),
+                $identityClassNameDetails?->getFullName(),
                 Repository::class,
-            ]),
+            ])),
             'model_class_name' => $modelClassNameDetails->getShortName(),
-            'identity_class_name' => $identityClassNameDetails->getShortName()
+            'identity_class_name' => $identityClassNameDetails?->getShortName()
         ];
 
         $templatePath = __DIR__.'/../Resources/skeleton/model/RepositoryInterface.tpl.php';
