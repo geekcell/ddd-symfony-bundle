@@ -1,6 +1,6 @@
 <?php
 
-namespace GeekCell\DddBundle\Tests\Integration;
+namespace GeekCell\DddBundle\Tests\Integration\Maker;
 
 use GeekCell\DddBundle\GeekCellDddBundle;
 use Symfony\Bundle\MakerBundle\Test\MakerTestKernel;

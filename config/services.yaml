@@ -40,7 +40,7 @@ services:
         class: GeekCell\DddBundle\Maker\MakeResource
         arguments:
             - '@maker.file_manager'
-            - '@GeekCell\DddBundle\Maker\Doctrine\ApiPlatformConfigUpdator'
+            - '@GeekCell\DddBundle\Maker\Doctrine\ApiPlatformConfigUpdater'
         tags:
             - { name: maker.command }
 
@@ -48,6 +48,7 @@ services:
         class: GeekCell\DddBundle\Maker\Doctrine\DoctrineConfigUpdater
         public: false
 
-    GeekCell\DddBundle\Maker\Doctrine\ApiPlatformConfigUpdator:
+    GeekCell\DddBundle\Maker\Doctrine\ApiPlatformConfigUpdater:
         class: GeekCell\DddBundle\Maker\ApiPlatform\ApiPlatformConfigUpdater
         public: false
+
