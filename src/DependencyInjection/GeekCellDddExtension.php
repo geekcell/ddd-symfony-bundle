@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
- * @codeCoverageIgnore
+ * @codeCoverageIgnozre
  *
  * @package GeekCell\DddBundle\DependencyInjection
  * @codeCoverageIgnore
@@ -21,6 +21,7 @@ class GeekCellDddExtension extends Extension
     {
         $locator = new FileLocator(__DIR__ . '/../../config');
         $loader = new YamlFileLoader($container, $locator);
+
         $loader->load('services.yaml');
     }
 }
