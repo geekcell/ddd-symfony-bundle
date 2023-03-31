@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8b5e75343626ca72110baba2e8256803",
+    "content-hash": "4c8c5f29d8c7ba84c6264390afce5da0",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -1140,20 +1140,21 @@
         },
         {
             "name": "geekcell/ddd",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/geekcell/php-ddd.git",
-                "reference": "512a81f7f850bd28762422dd9b418605ff6221a9"
+                "reference": "db2f32f6d9ed658f5d8979bd112e1e561a5ae732"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/geekcell/php-ddd/zipball/512a81f7f850bd28762422dd9b418605ff6221a9",
-                "reference": "512a81f7f850bd28762422dd9b418605ff6221a9",
+                "url": "https://api.github.com/repos/geekcell/php-ddd/zipball/db2f32f6d9ed658f5d8979bd112e1e561a5ae732",
+                "reference": "db2f32f6d9ed658f5d8979bd112e1e561a5ae732",
                 "shasum": ""
             },
             "require": {
                 "beberlei/assert": "^3.3",
+                "php": ">=8.1",
                 "psr/event-dispatcher": "^1.0",
                 "ramsey/uuid": "^4.7"
             },
@@ -1184,9 +1185,9 @@
             "description": "Your ultimate guard rails for domain driven design with PHP.",
             "support": {
                 "issues": "https://github.com/geekcell/php-ddd/issues",
-                "source": "https://github.com/geekcell/php-ddd/tree/v1.1.0"
+                "source": "https://github.com/geekcell/php-ddd/tree/v1.1.1"
             },
-            "time": "2023-01-20T12:01:35+00:00"
+            "time": "2023-03-31T09:27:37+00:00"
         },
         {
             "name": "psr/cache",
