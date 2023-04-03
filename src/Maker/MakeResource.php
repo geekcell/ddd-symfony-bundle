@@ -98,9 +98,9 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
             throw new RuntimeCommandException('This command requires Api Platform >2.7 to be installed.');
         }
 
-        if (false === $input->getOption('config')) {
+        if (null === $input->getOption('config')) {
             $configFlavor = $io->choice(
-                'Config flavor to create (attribute|xml). (<fg=yellow>%sModel</>)',
+                'Config flavor to create (attribute|xml)',
                 [
                     'attribute' => 'PHP attributes',
                     'xml' => 'XML mapping',
