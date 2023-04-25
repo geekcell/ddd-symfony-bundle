@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Maker;
 
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use GeekCell\Ddd\Contracts\Domain\Repository;
@@ -32,6 +31,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use GeekCell\DddBundle\Infrastructure\Doctrine\Repository as OrmRepository;
 
+use Symfony\Component\Filesystem\Path;
 use function Symfony\Component\String\u;
 
 const DOCTRINE_CONFIG_PATH = 'config/packages/doctrine.yaml';
@@ -110,6 +110,13 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Adds the suffix "Model" to the model class name',
+                null
+            )
+            ->addOption(
+                'base-path',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Base path from which to generate model & config.',
                 null
             )
         ;
@@ -199,6 +206,14 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
             );
             $input->setOption('entity', $asEntity);
         }
+
+        if (null === $input->getOption('base-path')) {
+            $basePath = $io->ask(
+                'Which base path should be used? Default is "' . PathGenerator::DEFAULT_BASE_PATH . '"',
+                PathGenerator::DEFAULT_BASE_PATH,
+            );
+            $input->setOption('base-path', $basePath);
+        }
     }
 
     /**
@@ -209,19 +224,20 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         /** @var string $modelName */
         $modelName = $input->getArgument('name');
         $suffix = $input->getOption('with-suffix') ? 'Model' : '';
+        $pathGenerator = new PathGenerator($input->getOption('base-path'));
 
         $modelClassNameDetails = $generator->createClassNameDetails(
             $modelName,
-            'Domain\\Model\\',
+            $pathGenerator->namespacePrefix('Domain\\Model\\'),
             $suffix,
         );
 
         $this->templateVariables['class_name'] = $modelClassNameDetails->getShortName();
 
-        $identityClassNameDetails = $this->generateIdentity($modelName, $input, $io, $generator);
-        $this->generateEntityMappings($modelClassNameDetails, $input, $io, $generator);
+        $identityClassNameDetails = $this->generateIdentity($modelName, $input, $io, $generator, $pathGenerator);
+        $this->generateEntityMappings($modelClassNameDetails, $input, $io, $generator, $pathGenerator);
         $this->generateEntity($modelClassNameDetails, $input, $generator);
-        $this->generateRepository($generator, $input, $modelClassNameDetails, $identityClassNameDetails);
+        $this->generateRepository($generator, $input, $pathGenerator, $modelClassNameDetails, $identityClassNameDetails);
 
         $this->writeSuccessMessage($io);
     }
@@ -239,7 +255,8 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         string $modelName,
         InputInterface $input,
         ConsoleStyle $io,
-        Generator $generator
+        Generator $generator,
+        PathGenerator $pathGenerator
     ): ?ClassNameDetails {
         if (!$this->shouldGenerateIdentity($input)) {
             return null;
@@ -251,7 +268,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         $identityType = $input->getOption('with-identity');
         $identityClassNameDetails = $generator->createClassNameDetails(
             $modelName,
-            'Domain\\Model\\ValueObject\\Identity\\',
+            $pathGenerator->namespacePrefix('Domain\\Model\\ValueObject\\Identity\\'),
             ucfirst($identityType),
         );
 
@@ -296,7 +313,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
 
         $mappingTypeClassNameDetails = $generator->createClassNameDetails(
             $modelName.ucfirst($identityType),
-            'Infrastructure\\Doctrine\\DBAL\\Type\\',
+            $pathGenerator->namespacePrefix('Infrastructure\\Doctrine\\DBAL\\Type\\'),
             'Type',
         );
 
@@ -360,12 +377,14 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
      * @param InputInterface $input
      * @param ConsoleStyle $io
      * @param Generator $generator
+     * @param PathGenerator $pathGenerator
      */
     private function generateEntityMappings(
         ClassNameDetails $modelClassNameDetails,
         InputInterface $input,
         ConsoleStyle $io,
-        Generator $generator
+        Generator $generator,
+        PathGenerator $pathGenerator
     ): void {
         if (!$this->shouldGenerateEntity($input)) {
             return;
@@ -378,7 +397,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
                 $newYaml = $this->doctrineUpdater->updateORMDefaultEntityMapping(
                     $this->fileManager->getFileContents(DOCTRINE_CONFIG_PATH),
                     'attribute',
-                    '%kernel.project_dir%/src/Domain/Model',
+                    $pathGenerator->path('%kernel.project_dir%/src', 'Domain/Model'),
                 );
                 $generator->dumpFile(DOCTRINE_CONFIG_PATH, $newYaml);
                 $this->classesToImport[] = ['Doctrine\\ORM\\Mapping' => 'ORM'];
@@ -403,7 +422,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
             $this->templateVariables['as_entity'] = false;
 
             try {
-                $mappingsDirectory = '/src/Infrastructure/Doctrine/ORM/Mapping';
+                $mappingsDirectory = $pathGenerator->path('/src' , 'Infrastructure/Doctrine/ORM/Mapping');
                 $newYaml = $this->doctrineUpdater->updateORMDefaultEntityMapping(
                     $this->fileManager->getFileContents(DOCTRINE_CONFIG_PATH),
                     'xml',
@@ -417,6 +436,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
                     $mappingsDirectory,
                     $modelName
                 );
+
                 $generator->generateFile(
                     $targetPath,
                     __DIR__.'/../Resources/skeleton/doctrine/Mapping.tpl.xml.php',
@@ -443,6 +463,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
      * @param ClassNameDetails $modelClassNameDetails
      * @param InputInterface $input
      * @param Generator $generator
+     * @throws \Exception
      */
     private function generateEntity(
         ClassNameDetails $modelClassNameDetails,
@@ -474,16 +495,18 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
      * @param InputInterface $input
      * @param ClassNameDetails $modelClassNameDetails
      * @param ?ClassNameDetails $identityClassNameDetails
+     * @throws \Exception
      */
     private function generateRepository(
         Generator $generator,
         InputInterface $input,
+        PathGenerator $pathGenerator,
         ClassNameDetails $modelClassNameDetails,
         ?ClassNameDetails $identityClassNameDetails,
     ): void {
         $interfaceNameDetails = $generator->createClassNameDetails(
             $input->getArgument('name'),
-            'Domain\\Repository\\',
+            $pathGenerator->namespacePrefix('Domain\\Repository\\'),
             'Repository',
         );
 
@@ -496,7 +519,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
 
         $implementationNameDetails = $generator->createClassNameDetails(
             $input->getArgument('name'),
-            'Infrastructure\\Doctrine\\ORM\\Repository\\',
+            $pathGenerator->namespacePrefix('Infrastructure\\Doctrine\\ORM\\Repository\\'),
             'Repository',
         );
 
