@@ -73,6 +73,13 @@ final class MakeController extends AbstractMaker implements InputAwareMakerInter
                 'Add a command bus dependency.',
                 null
             )
+            ->addOption(
+                'base-path',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Base path from which to generate model & config.',
+                null
+            )
         ;
     }
 
@@ -103,6 +110,14 @@ final class MakeController extends AbstractMaker implements InputAwareMakerInter
             );
             $input->setOption('include-command-bus', $includeCommandBus);
         }
+
+        if (null === $input->getOption('base-path')) {
+            $basePath = $io->ask(
+                'Which base path should be used? Default is "' . PathGenerator::DEFAULT_BASE_PATH . '"',
+                PathGenerator::DEFAULT_BASE_PATH,
+            );
+            $input->setOption('base-path', $basePath);
+        }
     }
 
     /**
@@ -110,9 +125,11 @@ final class MakeController extends AbstractMaker implements InputAwareMakerInter
      */
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
+        $pathGenerator = new PathGenerator($input->getOption('base-path'));
+
         $classNameDetails = $generator->createClassNameDetails(
             $input->getArgument('name'),
-            self::NAMESPACE_PREFIX,
+            $pathGenerator->namespacePrefix(self::NAMESPACE_PREFIX),
             'Controller',
         );
 
@@ -155,7 +172,7 @@ final class MakeController extends AbstractMaker implements InputAwareMakerInter
                 self::CONFIG_PATH,
                 $templatePathConfig,
                 [
-                    'path' => '../../src/Infrastructure/Http/Controller/',
+                    'path' => $pathGenerator->path('../../src/', 'Infrastructure/Http/Controller/'),
                     'namespace' => str_replace('\\' . $classNameDetails->getShortName(), '', $classNameDetails->getFullName())
                 ]
             );
