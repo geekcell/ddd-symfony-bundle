@@ -32,7 +32,7 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
 {
     const NAMESPACE_PREFIX = 'Infrastructure\\ApiPlatform\\';
     const CONFIG_PATH = 'config/packages/api_platform.yaml';
-    const CONFIG_PATH_XML = 'src/Infrastructure/ApiPlatform/Config';
+    const CONFIG_PATH_XML = 'Infrastructure/ApiPlatform/Config';
 
     const CONFIG_FLAVOR_ATTRIBUTE = 'attribute';
     const CONFIG_FLAVOR_XML = 'xml';
@@ -76,6 +76,13 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
                 'Config flavor to create (attribute|xml).',
                 null
             )
+            ->addOption(
+                'base-path',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Base path from which to generate model & config.',
+                null
+            )
         ;
     }
 
@@ -102,12 +109,20 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
             $configFlavor = $io->choice(
                 'Config flavor to create (attribute|xml). (<fg=yellow>%sModel</>)',
                 [
-                    'attribute' => 'PHP attributes',
-                    'xml' => 'XML mapping',
+                    self::CONFIG_FLAVOR_ATTRIBUTE => 'PHP attributes',
+                    self::CONFIG_PATH_XML => 'XML mapping',
                 ],
-                'attribute'
+                self::CONFIG_FLAVOR_ATTRIBUTE
             );
             $input->setOption('config', $configFlavor);
+        }
+
+        if (null === $input->getOption('base-path')) {
+            $basePath = $io->ask(
+                'Which base path should be used? Default is "' . PathGenerator::DEFAULT_BASE_PATH . '"',
+                PathGenerator::DEFAULT_BASE_PATH,
+            );
+            $input->setOption('base-path', $basePath);
         }
     }
 
@@ -118,37 +133,41 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
     {
         $baseName = $input->getArgument('name');
         $configFlavor = $input->getOption('config');
+        $pathGenerator = new PathGenerator($input->getOption('base-path'));
+
+        if (!in_array($configFlavor, [self::CONFIG_FLAVOR_ATTRIBUTE, self::CONFIG_PATH_XML])) {
+            throw new RuntimeCommandException('Unknown config flavor: ' . $configFlavor);
+        }
 
         $modelClassNameDetails = $generator->createClassNameDetails(
             $baseName,
-            'Domain\\Model\\',
-            '',
+            $pathGenerator->namespacePrefix('Domain\\Model\\'),
         );
 
         if (!class_exists($modelClassNameDetails->getFullName())) {
             throw new RuntimeCommandException("Could not find model {$modelClassNameDetails->getFullName()}!");
         }
 
-        $identityClassNameDetails = $this->ensureIdentity($modelClassNameDetails, $generator);
+        $identityClassNameDetails = $this->ensureIdentity($modelClassNameDetails, $generator, $pathGenerator);
 
         $classNameDetails = $generator->createClassNameDetails(
             $baseName,
-            self::NAMESPACE_PREFIX . 'Resource',
+            $pathGenerator->namespacePrefix(self::NAMESPACE_PREFIX . 'Resource'),
             'Resource',
         );
 
-        $this->ensureConfig($generator, $configFlavor);
+        $this->ensureConfig($generator, $pathGenerator, $configFlavor);
 
         $providerClassNameDetails = $generator->createClassNameDetails(
             $baseName,
-            self::NAMESPACE_PREFIX . 'State',
+            $pathGenerator->namespacePrefix(self::NAMESPACE_PREFIX . 'State'),
             'Provider',
         );
         $this->generateProvider($providerClassNameDetails, $generator);
 
         $processorClassNameDetails = $generator->createClassNameDetails(
             $baseName,
-            self::NAMESPACE_PREFIX . 'State',
+            $pathGenerator->namespacePrefix(self::NAMESPACE_PREFIX . 'State'),
             'Processor',
         );
         $this->generateProcessor($processorClassNameDetails, $generator);
@@ -178,7 +197,7 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
         );
 
         if ($configFlavor === self::CONFIG_FLAVOR_XML) {
-            $targetPathResourceConfig = self::CONFIG_PATH_XML . '/' . $classNameDetails->getShortName() . '.xml';
+            $targetPathResourceConfig = $pathGenerator->path('src/', self::CONFIG_PATH_XML . '/' . $classNameDetails->getShortName() . '.xml');
             $generator->generateFile(
                 $targetPathResourceConfig,
                 __DIR__.'/../Resources/skeleton/resource/ResourceXmlConfig.tpl.php',
@@ -190,7 +209,7 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
                 ]
             );
 
-            $targetPathPropertiesConfig = self::CONFIG_PATH_XML . '/' . $classNameDetails->getShortName() . 'Properties.xml';
+            $targetPathPropertiesConfig = $pathGenerator->path('src/', self::CONFIG_PATH_XML . '/' . $classNameDetails->getShortName() . 'Properties.xml');
             $generator->generateFile(
                 $targetPathPropertiesConfig,
                 __DIR__.'/../Resources/skeleton/resource/PropertiesXmlConfig.tpl.php',
@@ -210,13 +229,14 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
      * ensure custom resource path(s) are added to config
      *
      * @param Generator $generator
+     * @param PathGenerator $pathGenerator
      * @param string $configFlavor
      * @return void
      */
-    private function ensureConfig(Generator $generator, string $configFlavor): void
+    private function ensureConfig(Generator $generator, PathGenerator $pathGenerator, string $configFlavor): void
     {
-        $customResourcePath = '%kernel.project_dir%/src/Infrastructure/ApiPlatform/Resource';
-        $customConfigPath = '%kernel.project_dir%/' . self::CONFIG_PATH_XML;
+        $customResourcePath = $pathGenerator->path('%kernel.project_dir%/src', 'Infrastructure/ApiPlatform/Resource');
+        $customConfigPath = $pathGenerator->path('%kernel.project_dir%/src', self::CONFIG_PATH_XML);
 
         if (!$this->fileManager->fileExists(self::CONFIG_PATH)) {
             $generator->generateFile(
@@ -248,8 +268,9 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
      * @param ClassNameDetails $providerClassNameDetails
      * @param Generator $generator
      * @return void
+     * @throws \Exception
      */
-    private function generateProvider(ClassNameDetails $providerClassNameDetails, Generator $generator)
+    private function generateProvider(ClassNameDetails $providerClassNameDetails, Generator $generator): void
     {
         $templateVars = [
             'use_statements' => new UseStatementGenerator([
@@ -272,8 +293,9 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
      * @param ClassNameDetails $processorClassNameDetails
      * @param Generator $generator
      * @return void
+     * @throws \Exception
      */
-    private function generateProcessor(ClassNameDetails $processorClassNameDetails, Generator $generator)
+    private function generateProcessor(ClassNameDetails $processorClassNameDetails, Generator $generator): void
     {
         $templateVars = [
             'use_statements' => new UseStatementGenerator([
@@ -295,13 +317,14 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
     /**
      * @param ClassNameDetails $modelClassNameDetails
      * @param Generator $generator
+     * @param PathGenerator $pathGenerator
      * @return ClassNameDetails
      */
-    private function ensureIdentity(ClassNameDetails $modelClassNameDetails, Generator $generator): ClassNameDetails
+    private function ensureIdentity(ClassNameDetails $modelClassNameDetails, Generator $generator, PathGenerator $pathGenerator): ClassNameDetails
     {
         $idEntity = $generator->createClassNameDetails(
             $modelClassNameDetails->getShortName(),
-            'Domain\\Model\\ValueObject\\Identity',
+            $pathGenerator->namespacePrefix('Domain\\Model\\ValueObject\\Identity'),
             'Id',
         );
 
@@ -311,7 +334,7 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
 
         $uuidEntity = $generator->createClassNameDetails(
             $modelClassNameDetails->getShortName(),
-            'Domain\\Model\\ValueObject\\Identity',
+            $pathGenerator->namespacePrefix('Domain\\Model\\ValueObject\\Identity'),
             'Uuid',
         );
 

@@ -18,13 +18,15 @@ jobs:
             - uses: php-actions/composer@v6
             - name: PHPUnit Tests
               uses: php-actions/phpunit@v3
+              env:
+                  XDEBUG_MODE: coverage
               with:
                   version: 9.6.5
                   php_version: 8.2.3
                   configuration: phpunit.xml
                   php_extensions: "xdebug"
-                  coverage-text: true
-                  coverage-clover: reports/coverage.xml
+                  coverage_text: true
+                  coverage_clover: reports/coverage.xml
 
             # SonarCloud
             - name: SonarCloud Scan
