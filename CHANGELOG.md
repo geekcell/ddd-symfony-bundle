@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.2.3...v1.3.0) (2023-04-27)
+
+
+### Features
+
+* add `base-path` ([4673b6d](https://github.com/geekcell/ddd-symfony-bundle/commit/4673b6d515ec995828cbef9cde10e04c1aab7303))
+
 ## [1.2.3](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.2.2...v1.2.3) (2023-03-31)
 
 
