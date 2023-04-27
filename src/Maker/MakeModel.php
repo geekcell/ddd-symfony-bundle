@@ -30,8 +30,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use GeekCell\DddBundle\Infrastructure\Doctrine\Repository as OrmRepository;
-
-use Symfony\Component\Filesystem\Path;
 use function Symfony\Component\String\u;
 
 const DOCTRINE_CONFIG_PATH = 'config/packages/doctrine.yaml';
