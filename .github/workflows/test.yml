@@ -18,6 +18,8 @@ jobs:
             - uses: php-actions/composer@v6
             - name: PHPUnit Tests
               uses: php-actions/phpunit@v3
+              env:
+                  XDEBUG_MODE: coverage
               with:
                   version: 9.6.5
                   php_version: 8.2.3
