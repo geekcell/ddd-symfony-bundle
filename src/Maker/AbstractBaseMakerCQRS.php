@@ -143,7 +143,11 @@ abstract class AbstractBaseMakerCQRS extends AbstractMaker implements InputAware
      * @return void
      * @throws \Exception
      */
-    private function generateHandler(ClassNameDetails $queryClassNameDetails, Generator $generator, PathGenerator $pathGenerator): void
+    private function generateHandler(
+        ClassNameDetails $queryClassNameDetails,
+        Generator $generator,
+        PathGenerator $pathGenerator
+    ): void
     {
         $classNameDetails = $generator->createClassNameDetails(
             $queryClassNameDetails->getShortName(),
