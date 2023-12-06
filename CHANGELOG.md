@@ -1,5 +1,52 @@
 # Changelog
 
+## [1.3.0](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.2.3...v1.3.0) (2023-04-27)
+
+
+### Features
+
+* add `base-path` ([4673b6d](https://github.com/geekcell/ddd-symfony-bundle/commit/4673b6d515ec995828cbef9cde10e04c1aab7303))
+
+## [1.2.3](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.2.2...v1.2.3) (2023-03-31)
+
+
+### Miscellaneous Chores
+
+* Update `geekcell/ddd` to `v1.1.1` ([350e231](https://github.com/geekcell/ddd-symfony-bundle/commit/350e23113c7ad2288529d6083591b6467200411a))
+
+## [1.2.2](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.2.1...v1.2.2) (2023-03-29)
+
+
+### Miscellaneous Chores
+
+* release 1.2.2 ([c6bfaf5](https://github.com/geekcell/ddd-symfony-bundle/commit/c6bfaf5b3090b9c98601e1a901792386ca35eb0a))
+
+## [1.2.1](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.2.0...v1.2.1) (2023-03-28)
+
+
+### Miscellaneous Chores
+
+* **ci:** Sonar ([#31](https://github.com/geekcell/ddd-symfony-bundle/issues/31)) ([99e1931](https://github.com/geekcell/ddd-symfony-bundle/commit/99e19313ad89c365b0245baa468852fe12ec5326))
+
+## [1.2.0](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.1.5...v1.2.0) (2023-03-28)
+
+
+### Features
+
+* release ([#29](https://github.com/geekcell/ddd-symfony-bundle/issues/29)) ([6140643](https://github.com/geekcell/ddd-symfony-bundle/commit/614064397a8818f58c6bdc07c6d6a4a1b3ca5a6e))
+
+## [1.1.5](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.1.4...v1.1.5) (2023-03-13)
+
+
+### Bug Fixes
+
+* Enable custom doctrine types to handle `null` values ([8f2d52c](https://github.com/geekcell/ddd-symfony-bundle/commit/8f2d52c05fb92220c8c74e3e74b97232c6b8633e)), closes [#26](https://github.com/geekcell/ddd-symfony-bundle/issues/26)
+
+
+### Miscellaneous Chores
+
+* Apply fixes from PHP CS Fixer and PHPStan. ([4a9ba6b](https://github.com/geekcell/ddd-symfony-bundle/commit/4a9ba6b6f06d3ab256038551413d93e9b295d1ad))
+
 ## [1.1.4](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.1.3...v1.1.4) (2023-01-20)
 
 
