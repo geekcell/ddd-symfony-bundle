@@ -9,6 +9,10 @@ use Doctrine\ORM\Tools\Pagination\Paginator as OrmPaginator;
 use GeekCell\Ddd\Contracts\Domain\Paginator as PaginatorInterface;
 use Traversable;
 
+/**
+ * @template T of object
+ * @implements PaginatorInterface<T>
+ */
 class Paginator implements PaginatorInterface
 {
     /**

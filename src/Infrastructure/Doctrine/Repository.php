@@ -16,6 +16,10 @@ use Traversable;
 
 use function Symfony\Component\String\u;
 
+/**
+ * @template T of object
+ * @implements RepositoryInterface<T>
+ */
 abstract class Repository implements RepositoryInterface
 {
     /**
