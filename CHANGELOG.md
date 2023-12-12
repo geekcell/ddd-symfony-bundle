@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.3.0...v1.4.0) (2023-12-12)
+
+
+### Features
+
+* Add generic support / forwarding for Doctrine Paginator and Repository ([e1dee96](https://github.com/geekcell/ddd-symfony-bundle/commit/e1dee9648689421b1de80e5bc5956161f2ebe7ab))
+
 ## [1.3.0](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.2.3...v1.3.0) (2023-04-27)
 
 
