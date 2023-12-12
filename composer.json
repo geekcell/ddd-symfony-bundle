@@ -2,7 +2,7 @@
     "name": "geekcell/ddd-bundle",
     "description": "A bundle for pragmatic domain driven design in Symfony.",
     "type": "symfony-bundle",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "license": "MIT",
     "authors": [
         {
