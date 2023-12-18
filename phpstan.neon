@@ -1,5 +1,6 @@
 includes:
     - vendor/phpstan/phpstan-mockery/extension.neon
+    - vendor/phpstan/phpstan-beberlei-assert/extension.neon
 
 parameters:
     level: max

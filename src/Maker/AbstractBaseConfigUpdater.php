@@ -16,7 +16,7 @@ abstract class AbstractBaseConfigUpdater
      * Creates a YamlSourceManipulator from a YAML source.
      *
      * @param string $yamlSource
-     * @return array<string, string|string[]>
+     * @return array<string, mixed>
      */
     protected function read(string $yamlSource): array
     {
@@ -27,7 +27,7 @@ abstract class AbstractBaseConfigUpdater
     /**
      * Returns the updated YAML contents for the given data.
      *
-     * @param array<string, string|string[]> $yamlData
+     * @param array<string, mixed> $yamlData
      * @return string
      * @throws AssertionFailedException
      */

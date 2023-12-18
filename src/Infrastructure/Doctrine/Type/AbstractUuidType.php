@@ -13,9 +13,8 @@ abstract class AbstractUuidType extends GuidType
 {
     /**
      * @inheritDoc
-     * @return string
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if (is_string($value)) {
             return $value;
@@ -38,9 +37,8 @@ abstract class AbstractUuidType extends GuidType
 
     /**
      * @inheritDoc
-     * @return Uuid
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?Uuid
     {
         if ($value === null) {
             return null;
@@ -62,7 +60,7 @@ abstract class AbstractUuidType extends GuidType
     }
 
     /**
-     * @return class-string<Uuid> $entityType
+     * @return class-string<Uuid>
      */
     abstract protected function getIdType(): string;
 }

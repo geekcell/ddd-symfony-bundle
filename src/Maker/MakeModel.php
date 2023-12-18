@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Maker;
 
+use Assert\Assert;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use GeekCell\Ddd\Contracts\Domain\Repository;
@@ -30,6 +31,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use GeekCell\DddBundle\Infrastructure\Doctrine\Repository as OrmRepository;
+
 use function Symfony\Component\String\u;
 
 const DOCTRINE_CONFIG_PATH = 'config/packages/doctrine.yaml';
@@ -53,7 +55,8 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
     public function __construct(
         private readonly DoctrineConfigUpdater $doctrineUpdater,
         private readonly FileManager $fileManager,
-    ) {}
+    ) {
+    }
 
     /**
      * @inheritDoc
@@ -141,8 +144,8 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
             throw new RuntimeCommandException('The file "' . DOCTRINE_CONFIG_PATH . '" does not exist. This command requires that file to exist so that it can be updated.');
         }
 
-        /** @var string $modelName */
         $modelName = $input->getArgument('name');
+        Assert::that($modelName)->string();
 
         $useSuffix = $input->getOption('with-suffix');
         if (null === $useSuffix) {
@@ -219,10 +222,12 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
      */
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
-        /** @var string $modelName */
         $modelName = $input->getArgument('name');
+        Assert::that($modelName)->string();
         $suffix = $input->getOption('with-suffix') ? 'Model' : '';
-        $pathGenerator = new PathGenerator($input->getOption('base-path'));
+        $basePath = $input->getOption('base-path');
+        Assert::that($basePath)->string();
+        $pathGenerator = new PathGenerator($basePath);
 
         $modelClassNameDetails = $generator->createClassNameDetails(
             $modelName,
@@ -262,8 +267,8 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
 
         // 1. Generate the identity value object.
 
-        /** @var string $identityType */
         $identityType = $input->getOption('with-identity');
+        Assert::that($identityType)->string();
         $identityClassNameDetails = $generator->createClassNameDetails(
             $modelName,
             $pathGenerator->namespacePrefix('Domain\\Model\\ValueObject\\Identity\\'),
@@ -420,7 +425,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
             $this->templateVariables['as_entity'] = false;
 
             try {
-                $mappingsDirectory = $pathGenerator->path('/src' , 'Infrastructure/Doctrine/ORM/Mapping');
+                $mappingsDirectory = $pathGenerator->path('/src', 'Infrastructure/Doctrine/ORM/Mapping');
                 $newYaml = $this->doctrineUpdater->updateORMDefaultEntityMapping(
                     $this->fileManager->getFileContents(DOCTRINE_CONFIG_PATH),
                     'xml',
@@ -441,9 +446,9 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
                     [
                         'model_class' => $modelClassNameDetails->getFullName(),
                         'has_identity' => $hasIdentity,
-                        'type_name' => $hasIdentity ?? $this->templateVariables['type_name'],
+                        'type_name' => $hasIdentity ? $this->templateVariables['type_name'] : null,
                         'table_name' => $tableName,
-                        'identity_column_name' => $hasIdentity ?? $this->templateVariables['identity_type'],
+                        'identity_column_name' => $hasIdentity ? $this->templateVariables['identity_type'] : null,
                     ],
                 );
             } catch (YamlManipulationFailedException $e) {
@@ -502,8 +507,10 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         ClassNameDetails $modelClassNameDetails,
         ?ClassNameDetails $identityClassNameDetails,
     ): void {
+        $name = $input->getArgument('name');
+        Assert::that($name)->string();
         $interfaceNameDetails = $generator->createClassNameDetails(
-            $input->getArgument('name'),
+            $name,
             $pathGenerator->namespacePrefix('Domain\\Repository\\'),
             'Repository',
         );
@@ -516,21 +523,26 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         );
 
         $implementationNameDetails = $generator->createClassNameDetails(
-            $input->getArgument('name'),
+            $name,
             $pathGenerator->namespacePrefix('Infrastructure\\Doctrine\\ORM\\Repository\\'),
             'Repository',
         );
 
         $interfaceClassName = $interfaceNameDetails->getShortName() . 'Interface';
+        $useStatements = [
+            $modelClassNameDetails->getFullName(),
+            ManagerRegistry::class,
+            QueryBuilder::class,
+            OrmRepository::class => 'OrmRepository',
+            $interfaceNameDetails->getFullName() => $interfaceClassName
+        ];
+
+        if ($identityClassNameDetails?->getFullName()) {
+            $useStatements[] = $identityClassNameDetails->getFullName();
+        }
+
         $templateVars = [
-            'use_statements' => new UseStatementGenerator(array_filter([
-                $modelClassNameDetails->getFullName(),
-                $identityClassNameDetails?->getFullName(),
-                ManagerRegistry::class,
-                QueryBuilder::class,
-                [ OrmRepository::class => 'OrmRepository' ],
-                [ $interfaceNameDetails->getFullName() => $interfaceClassName ],
-            ])),
+            'use_statements' => new UseStatementGenerator($useStatements),
             'interface_class_name' => $interfaceClassName,
             'model_class_name' => $modelClassNameDetails->getShortName(),
             'identity_class_name' => $identityClassNameDetails?->getShortName()

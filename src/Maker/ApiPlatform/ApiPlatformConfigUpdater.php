@@ -18,9 +18,11 @@ class ApiPlatformConfigUpdater extends AbstractBaseConfigUpdater
     {
         $data = $this->read($yamlSource);
 
-        /** @var array|null $currentPaths */
-        $currentPaths = $data['api_platform']['mapping']['paths'];
-        $data['api_platform']['mapping']['paths'] = array_unique(array_merge($currentPaths, [$path]));
+        /** @phpstan-ignore-next-line */
+        if (isset($data['api_platform']['mapping']) && is_array($data['api_platform']['mapping'])) {
+            $currentPaths = $data['api_platform']['mapping']['paths'] ?? [];
+            $data['api_platform']['mapping']['paths'] = array_unique(array_merge($currentPaths, [$path]));
+        }
 
         return $this->write($data);
     }

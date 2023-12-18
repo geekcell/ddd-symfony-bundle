@@ -10,7 +10,7 @@ class PathGeneratorTest extends TestCase
     /**
      * @dataProvider provideNamespacePrefixData
      */
-    public function testNamespacePrefix(string $basePath, string $namespacePrefix, string $expected)
+    public function testNamespacePrefix(string $basePath, string $namespacePrefix, string $expected): void
     {
         $pathGenerator = new PathGenerator($basePath);
 
@@ -18,7 +18,7 @@ class PathGeneratorTest extends TestCase
     }
 
     /**
-     * @return array<string, string, string>
+     * @return array<int, string[]>
      */
     public function provideNamespacePrefixData(): array
     {
@@ -34,7 +34,7 @@ class PathGeneratorTest extends TestCase
     /**
      * @dataProvider providePathData
      */
-    public function testPath(string $basePath, string $prefix, string $suffix, string $expected)
+    public function testPath(string $basePath, string $prefix, string $suffix, string $expected): void
     {
         $pathGenerator = new PathGenerator($basePath);
 
@@ -42,7 +42,7 @@ class PathGeneratorTest extends TestCase
     }
 
     /**
-     * @return array<string, string, string, string>
+     * @return array<int, string[]>
      */
     public function providePathData(): array
     {

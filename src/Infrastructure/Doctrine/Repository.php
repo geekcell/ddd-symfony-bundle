@@ -22,17 +22,10 @@ use function Symfony\Component\String\u;
  */
 abstract class Repository implements RepositoryInterface
 {
-    /**
-     * @var QueryBuilder
-     */
     private QueryBuilder $queryBuilder;
 
     /**
-     * Constructor.
-     *
-     * @param EntityManagerInterface $entityManager  The entity manager
-     * @param class-string $entityType               The entity class
-     * @param string $alias                          Entity alias
+     * @param class-string $entityType
      */
     public function __construct(
         protected EntityManagerInterface $entityManager,
@@ -56,10 +49,8 @@ abstract class Repository implements RepositoryInterface
      */
     public function collect(): Collection
     {
-        /** @var array<object> $results */
+        /** @var array<T> $results */
         $results = $this->queryBuilder->getQuery()->getResult() ?? [];
-
-        /** @var Collection */
         return new Collection($results);
     }
 
@@ -80,9 +71,9 @@ abstract class Repository implements RepositoryInterface
             }
         );
 
-        return new DoctrinePaginator(
-            new OrmPaginator($repository->queryBuilder->getQuery())
-        );
+        /** @var OrmPaginator<T> $paginator */
+        $paginator = new OrmPaginator($repository->queryBuilder->getQuery());
+        return new DoctrinePaginator($paginator);
     }
 
     /**
@@ -116,9 +107,6 @@ abstract class Repository implements RepositoryInterface
         return $clone;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function __clone(): void
     {
         $this->queryBuilder = clone $this->queryBuilder;
