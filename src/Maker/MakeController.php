@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Maker;
 
+use Assert\Assert;
 use GeekCell\Ddd\Contracts\Application\CommandBus;
 use GeekCell\Ddd\Contracts\Application\QueryBus;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -125,10 +126,14 @@ final class MakeController extends AbstractMaker implements InputAwareMakerInter
      */
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
-        $pathGenerator = new PathGenerator($input->getOption('base-path'));
+        $basePath = $input->getOption('base-path');
+        Assert::that($basePath)->string();
+        $pathGenerator = new PathGenerator($basePath);
 
+        $name = $input->getArgument('name');
+        Assert::that($name)->string();
         $classNameDetails = $generator->createClassNameDetails(
-            $input->getArgument('name'),
+            $name,
             $pathGenerator->namespacePrefix(self::NAMESPACE_PREFIX),
             'Controller',
         );
@@ -139,7 +144,7 @@ final class MakeController extends AbstractMaker implements InputAwareMakerInter
             Response::class
         ];
 
-        $routeName = lcfirst($input->getArgument('name'));
+        $routeName = lcfirst($name);
         $templateVars = [
             'route_name' => $routeName,
             'route_name_snake' => u($routeName)->snake()->lower(),

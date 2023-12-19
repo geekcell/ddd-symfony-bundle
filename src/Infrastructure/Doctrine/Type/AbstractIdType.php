@@ -11,7 +11,7 @@ use GeekCell\Ddd\Domain\ValueObject\Id;
 
 abstract class AbstractIdType extends IntegerType
 {
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?int
     {
         if (is_int($value)) {
             return $value;
@@ -32,7 +32,7 @@ abstract class AbstractIdType extends IntegerType
         return intval($value->getValue());
     }
 
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?Id
     {
         if ($value === null) {
             return null;
@@ -54,7 +54,7 @@ abstract class AbstractIdType extends IntegerType
     }
 
     /**
-     * @return class-string<Id> $entityType
+     * @return class-string<Id>
      */
     abstract protected function getIdType(): string;
 }

@@ -9,9 +9,9 @@ class GeekCellMakerTestKernel extends MakerTestKernel
 {
     public function registerBundles(): iterable
     {
-        $bundles = parent::registerBundles();
-        $bundles[] = new GeekCellDddBundle();
-
-        return $bundles;
+        return  [
+            ...parent::registerBundles(),
+            new GeekCellDddBundle()
+        ];
     }
 }

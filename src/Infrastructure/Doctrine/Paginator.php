@@ -15,20 +15,12 @@ use Traversable;
  */
 class Paginator implements PaginatorInterface
 {
-    /**
-     * @var int
-     */
     private readonly int $firstResult;
 
-    /**
-     * @var int
-     */
     private readonly int $maxResults;
 
     /**
-     * Constructor.
-     *
-     * @param OrmPaginator $ormPaginator
+     * @param OrmPaginator<T> $ormPaginator
      */
     public function __construct(
         private readonly OrmPaginator $ormPaginator,

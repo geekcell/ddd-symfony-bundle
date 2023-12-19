@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Maker;
 
-use ApiPlatform\Metadata\ApiProperty;
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Operation;
-use ApiPlatform\State\ProcessorInterface;
-use ApiPlatform\State\ProviderInterface;
-use ApiPlatform\Symfony\Bundle\ApiPlatformBundle;
+use Assert\Assert;
 use GeekCell\Ddd\Contracts\Application\CommandBus;
 use GeekCell\Ddd\Contracts\Application\QueryBus;
 use GeekCell\DddBundle\Maker\ApiPlatform\ApiPlatformConfigUpdater;
@@ -30,17 +25,48 @@ use Symfony\Component\Console\Input\InputOption;
 
 final class MakeResource extends AbstractMaker implements InputAwareMakerInterface
 {
-    const NAMESPACE_PREFIX = 'Infrastructure\\ApiPlatform\\';
-    const CONFIG_PATH = 'config/packages/api_platform.yaml';
-    const CONFIG_PATH_XML = 'Infrastructure/ApiPlatform/Config';
+    public const NAMESPACE_PREFIX = 'Infrastructure\\ApiPlatform\\';
+    public const CONFIG_PATH = 'config/packages/api_platform.yaml';
+    public const CONFIG_PATH_XML = 'Infrastructure/ApiPlatform/Config';
 
-    const CONFIG_FLAVOR_ATTRIBUTE = 'attribute';
-    const CONFIG_FLAVOR_XML = 'xml';
+    /**
+     * @see \ApiPlatform\Metadata\ApiResource
+     */
+    private const API_PLATFORM_RESOURCE_CLASS = 'ApiPlatform\Metadata\ApiResource';
+
+    /**
+     * @see \ApiPlatform\Metadata\ApiProperty
+     */
+    private const API_PLATFORM_PROPERTY_CLASS = 'ApiPlatform\Metadata\ApiProperty';
+
+    /**
+     * @see \ApiPlatform\Symfony\Bundle\ApiPlatformBundle
+     */
+    private const API_PLATFORM_BUNDLE_CLASS = 'ApiPlatform\Symfony\Bundle\ApiPlatformBundle';
+
+    /**
+     * @see \ApiPlatform\Metadata\Operation
+     */
+    private const API_PLATFORM_OPERATION_CLASS = 'ApiPlatform\Metadata\Operation';
+
+    /**
+     * @see \ApiPlatform\State\ProcessorInterface
+     */
+    private const API_PLATFORM_PROCESSOR_INTERFACE = 'ApiPlatform\State\ProcessorInterface';
+
+    /**
+     * @see \ApiPlatform\State\ProviderInterface
+     */
+    private const API_PLATFORM_PROVIDER_INTERFACE = 'ApiPlatform\State\ProviderInterface';
+
+    public const CONFIG_FLAVOR_ATTRIBUTE = 'attribute';
+    public const CONFIG_FLAVOR_XML = 'xml';
 
     public function __construct(
         private FileManager $fileManager,
         private ApiPlatformConfigUpdater $configUpdater
-    ) {}
+    ) {
+    }
 
     /**
      * @inheritDoc
@@ -101,7 +127,7 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
         // Check for bundle to make sure API Platform package is installed.
         // Then check if the new ApiResource class in the Metadata namespace exists.
         //  -> Was only introduced in v2.7.
-        if (!class_exists(ApiPlatformBundle::class) || !class_exists(ApiResource::class)) {
+        if (!class_exists(self::API_PLATFORM_BUNDLE_CLASS) || !class_exists(self::API_PLATFORM_RESOURCE_CLASS)) {
             throw new RuntimeCommandException('This command requires Api Platform >2.7 to be installed.');
         }
 
@@ -132,10 +158,14 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
         $baseName = $input->getArgument('name');
+        Assert::that($baseName)->string();
         $configFlavor = $input->getOption('config');
-        $pathGenerator = new PathGenerator($input->getOption('base-path'));
+        Assert::that($configFlavor)->string();
+        $basePath = $input->getOption('base-path');
+        Assert::that($basePath)->string();
+        $pathGenerator = new PathGenerator($basePath);
 
-        if (!in_array($configFlavor, [self::CONFIG_FLAVOR_ATTRIBUTE, self::CONFIG_PATH_XML])) {
+        if (!in_array($configFlavor, [self::CONFIG_FLAVOR_ATTRIBUTE, self::CONFIG_FLAVOR_XML], true)) {
             throw new RuntimeCommandException('Unknown config flavor: ' . $configFlavor);
         }
 
@@ -174,8 +204,8 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
 
         $classesToImport = [$modelClassNameDetails->getFullName()];
         if ($configFlavor === self::CONFIG_FLAVOR_ATTRIBUTE) {
-            $classesToImport[] = ApiResource::class;
-            $classesToImport[] = ApiProperty::class;
+            $classesToImport[] = self::API_PLATFORM_RESOURCE_CLASS;
+            $classesToImport[] = self::API_PLATFORM_PROPERTY_CLASS;
             $classesToImport[] = $providerClassNameDetails->getFullName();
             $classesToImport[] = $processorClassNameDetails->getFullName();
         }
@@ -274,9 +304,9 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
     {
         $templateVars = [
             'use_statements' => new UseStatementGenerator([
-                ProviderInterface::class,
+                self::API_PLATFORM_PROVIDER_INTERFACE,
                 QueryBus::class,
-                Operation::class
+                self::API_PLATFORM_OPERATION_CLASS
             ]),
         ];
 
@@ -299,9 +329,9 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
     {
         $templateVars = [
             'use_statements' => new UseStatementGenerator([
-                ProcessorInterface::class,
+                self::API_PLATFORM_PROCESSOR_INTERFACE,
                 CommandBus::class,
-                Operation::class
+                self::API_PLATFORM_OPERATION_CLASS
             ]),
         ];
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Maker;
 
+use Assert\Assert;
 use Symfony\Bundle\MakerBundle\InputConfiguration;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
@@ -101,10 +102,14 @@ abstract class AbstractBaseMakerCQRS extends AbstractMaker implements InputAware
      */
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
-        $pathGenerator = new PathGenerator($input->getOption('base-path'));
+        $basePath = $input->getOption('base-path');
+        Assert::that($basePath)->string();
+        $pathGenerator = new PathGenerator($basePath);
 
+        $argument = $input->getArgument('name');
+        Assert::that($argument)->string();
         $entityClassNameDetails = $generator->createClassNameDetails(
-            $input->getArgument('name'),
+            $argument,
             $this->getNamespacePrefix($pathGenerator),
             $this->getClassSuffix(),
         );

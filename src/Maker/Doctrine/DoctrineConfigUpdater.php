@@ -21,7 +21,10 @@ class DoctrineConfigUpdater extends AbstractBaseConfigUpdater
     public function addCustomDBALMappingType(string $yamlSource, string $identifier, string $mappingClass): string
     {
         $data = $this->read($yamlSource);
-        $data['doctrine']['dbal']['types'][$identifier] = $mappingClass;
+        /** @phpstan-ignore-next-line */
+        if (isset($data['doctrine']['dbal']['types']) && is_array($data['doctrine']['dbal']['types'])) {
+            $data['doctrine']['dbal']['types'][$identifier] = $mappingClass;
+        }
 
         return $this->write($data);
     }
@@ -30,7 +33,7 @@ class DoctrineConfigUpdater extends AbstractBaseConfigUpdater
      * Updates the default entity mapping configuration.
      *
      * @param string $yamlSource    The contents of current doctrine.yaml
-     * @param string $mappingType   The type of the mapping (xml or annotation)
+     * @param 'xml'|'attribute' $mappingType   The type of the mapping (xml or annotation)
      * @param string $directory     The directory where the mapping files are located
      *
      * @return string The updated doctrine.yaml contents
@@ -40,11 +43,18 @@ class DoctrineConfigUpdater extends AbstractBaseConfigUpdater
         Assert\Assertion::inArray($mappingType, ['xml', 'attribute'], 'Invalid mapping type: %s');
 
         $data = $this->read($yamlSource);
-        $data['doctrine']['orm']['mappings']['App']['type'] = $mappingType;
-        $data['doctrine']['orm']['mappings']['App']['dir'] = $directory;
-        $data['doctrine']['orm']['mappings']['App']['prefix'] = 'App\Domain\Model';
-        $data['doctrine']['orm']['mappings']['App']['alias'] = 'App';
-        $data['doctrine']['orm']['mappings']['App']['is_bundle'] = false;
+        $config = [
+            'type' =>  $mappingType,
+            'dir' =>  $directory,
+            'prefix' =>  'App\Domain\Model',
+            'alias' =>  'App',
+            'is_bundle' =>  false,
+        ];
+
+        /** @phpstan-ignore-next-line */
+        if (isset($data['doctrine']['orm']['mappings']['App']) && is_array($data['doctrine']['orm']['mappings']['App'])) {
+            $data['doctrine']['orm']['mappings']['App'] = $config;
+        }
 
         return $this->write($data);
     }
