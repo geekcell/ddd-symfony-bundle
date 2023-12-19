@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.4.0...v1.4.1) (2023-12-19)
+
+
+### Miscellaneous Chores
+
+* fix phpstan, add phpstan/phpstan-beberlei-assert ([eab817a](https://github.com/geekcell/ddd-symfony-bundle/commit/eab817a56c8dd3b8b95fc244cbe8fb98ecde68ca))
+
 ## [1.4.0](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.3.0...v1.4.0) (2023-12-12)
 
 
