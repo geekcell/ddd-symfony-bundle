@@ -22,7 +22,7 @@ class ThrowingQueryHandler
     {
     }
 
-    public function __invoke(TestQuery $command): mixed
+    public function __invoke(TestQuery $query): mixed
     {
         throw $this->exceptionToThrow;
     }
