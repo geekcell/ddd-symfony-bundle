@@ -11,21 +11,27 @@ use Symfony\Component\Messenger\Handler\HandlersLocator;
 use Symfony\Component\Messenger\MessageBus;
 use Symfony\Component\Messenger\Middleware\HandleMessageMiddleware;
 
-/**
- * Test fixture for CommandBus.
- */
 class TestCommand implements Command
 {
 }
 
-/**
- * Test fixture for CommandBus.
- */
 class TestCommandHandler
 {
     public function __invoke(TestCommand $command): mixed
     {
         return get_class($command);
+    }
+}
+
+class ThrowingCommandHandler
+{
+    public function __construct(private readonly \Exception $exceptionToThrow)
+    {
+    }
+
+    public function __invoke(TestCommand $command): mixed
+    {
+        throw $this->exceptionToThrow;
     }
 }
 
@@ -45,6 +51,23 @@ class CommandBusTest extends TestCase
 
         // Then
         $this->assertSame(TestCommand::class, $result);
+    }
+
+    public function testDispatchFailsAndRethrowsException(): void
+    {
+        // Given
+        $expectedException = new \Exception('Not good enough');
+        $bus = $this->createMessageBus(
+            TestCommand::class,
+            new ThrowingCommandHandler($expectedException)
+        );
+        $commandBus = new CommandBus($bus);
+
+        // Then
+        $this->expectExceptionObject($expectedException);
+
+        // When
+        $commandBus->dispatch(new TestCommand());
     }
 
     private function createMessageBus(
