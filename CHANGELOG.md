@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.2](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.4.1...v1.4.2) (2023-12-20)
+
+
+### Bug Fixes
+
+* logic to throw first wrapped exception in messenger busses ([db7e2b5](https://github.com/geekcell/ddd-symfony-bundle/commit/db7e2b51366ea3fc0fb970d5955deb29ca604d3c))
+
+
+### Miscellaneous Chores
+
+* rename function parameter to query ([f88020f](https://github.com/geekcell/ddd-symfony-bundle/commit/f88020fd2a820b856252288fe3ad208fe0db17f1))
+
 ## [1.4.1](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.4.0...v1.4.1) (2023-12-19)
 
 
