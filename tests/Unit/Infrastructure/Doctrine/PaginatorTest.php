@@ -4,42 +4,25 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Tests\Unit\Infrastructure\Doctrine;
 
+use Doctrine\ORM\Query;
 use PHPUnit\Framework\Attributes\DataProvider;
 use ArrayIterator;
 use Doctrine\ORM\Tools\Pagination\Paginator as OrmPaginator;
 use GeekCell\DddBundle\Infrastructure\Doctrine\Paginator as DoctrinePaginator;
 use Mockery;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Traversable;
 
 class PaginatorTest extends TestCase
 {
-    /** @var OrmPaginator|Mockery\MockInterface */
-    private mixed $ormPaginatorMock;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->ormPaginatorMock = Mockery::mock(OrmPaginator::class);
-    }
-
     #[DataProvider('provideCurrentPageData')]
     public function testGetCurrentPage(int $first, int $max, int $currentPage): void
     {
         // Given
-        $this->ormPaginatorMock->shouldReceive('getQuery')
-            ->once()
-            ->andReturnSelf();
+        $ormPaginator = $this->mockOrmPaginator($first, $max);
 
-        $this->ormPaginatorMock->shouldReceive('getFirstResult')
-            ->once()
-            ->andReturn($first);
-
-        $this->ormPaginatorMock->shouldReceive('getMaxResults')
-            ->once()
-            ->andReturn($max);
-
-        $paginator = new DoctrinePaginator($this->ormPaginatorMock);
+        $paginator = new DoctrinePaginator($ormPaginator);
 
         // When
         $result = $paginator->getCurrentPage();
@@ -48,27 +31,77 @@ class PaginatorTest extends TestCase
         $this->assertEquals($currentPage, $result);
     }
 
+    /**
+     * @param ?Traversable<mixed> $iterator
+     */
+    private function mockOrmPaginator(
+        int $firstResult,
+        ?int $maxResults,
+        ?int $count = null,
+        ?Traversable $iterator = null
+    ): OrmPaginator&MockObject {
+        $ormPaginatorMock = $this->createMock(OrmPaginator::class);
+        if ($count !== null) {
+            $ormPaginatorMock
+                ->expects($this->once())
+                ->method('count')
+                ->willReturn($count);
+        }
+
+        if ($iterator !== null) {
+            $ormPaginatorMock
+                ->expects($this->once())
+                ->method('getIterator')
+                ->willReturn($iterator);
+        }
+
+        if (!method_exists(OrmPaginator::class, 'getFirstResult')) {
+            // doctrine/orm:^3.x
+            $query = $this->createMock(Query::class);
+            $ormPaginatorMock
+                ->expects($this->once())
+                ->method('getQuery')
+                ->willReturn($query);
+
+            $query
+                ->expects($this->once())
+                ->method('getFirstResult')
+                ->willReturn($firstResult);
+
+            $query
+                ->expects($this->once())
+                ->method('getMaxResults')
+                ->willReturn($maxResults);
+
+            return $ormPaginatorMock;
+        }
+
+        // doctrine/orm:^2.x
+        $ormPaginatorMock
+            ->expects($this->once())
+            ->method('getQuery')
+            ->willReturnSelf();
+
+        $ormPaginatorMock
+            ->expects($this->once())
+            ->method('getFirstResult')
+            ->willReturn($firstResult);
+
+        $ormPaginatorMock
+            ->expects($this->once())
+            ->method('getMaxResults')
+            ->willReturn($maxResults);
+
+        return $ormPaginatorMock;
+    }
+
     #[DataProvider('provideTotalPagesData')]
     public function testGetTotalPages(int $first, int $max, int $count, int $total): void
     {
         // Given
-        $this->ormPaginatorMock->shouldReceive('getQuery')
-            ->once()
-            ->andReturnSelf();
+        $ormPaginator = $this->mockOrmPaginator($first, $max, $count);
 
-        $this->ormPaginatorMock->shouldReceive('getFirstResult')
-            ->once()
-            ->andReturn($first);
-
-        $this->ormPaginatorMock->shouldReceive('getMaxResults')
-            ->once()
-            ->andReturn($max);
-
-        $this->ormPaginatorMock->shouldReceive('count')
-            ->once()
-            ->andReturn($count);
-
-        $paginator = new DoctrinePaginator($this->ormPaginatorMock);
+        $paginator = new DoctrinePaginator($ormPaginator);
 
         // When
         $result = $paginator->getTotalPages();
@@ -82,19 +115,9 @@ class PaginatorTest extends TestCase
         // Given
         $max = 100;
 
-        $this->ormPaginatorMock->shouldReceive('getQuery')
-            ->once()
-            ->andReturnSelf();
+        $ormPaginator = $this->mockOrmPaginator(1, $max);
 
-        $this->ormPaginatorMock->shouldReceive('getFirstResult')
-            ->once()
-            ->andReturn(1);
-
-        $this->ormPaginatorMock->shouldReceive('getMaxResults')
-            ->once()
-            ->andReturn($max);
-
-        $paginator = new DoctrinePaginator($this->ormPaginatorMock);
+        $paginator = new DoctrinePaginator($ormPaginator);
 
         // When
         $result = $paginator->getItemsPerPage();
@@ -107,24 +130,9 @@ class PaginatorTest extends TestCase
     {
         // Given
         $count = 100;
+        $ormPaginator = $this->mockOrmPaginator(1, 1, $count);
 
-        $this->ormPaginatorMock->shouldReceive('getQuery')
-            ->once()
-            ->andReturnSelf();
-
-        $this->ormPaginatorMock->shouldReceive('getFirstResult')
-            ->once()
-            ->andReturn(1);
-
-        $this->ormPaginatorMock->shouldReceive('getMaxResults')
-            ->once()
-            ->andReturn(1);
-
-        $this->ormPaginatorMock->shouldReceive('count')
-            ->once()
-            ->andReturn($count);
-
-        $paginator = new DoctrinePaginator($this->ormPaginatorMock);
+        $paginator = new DoctrinePaginator($ormPaginator);
 
         // When
         $result = $paginator->getTotalItems();
@@ -138,23 +146,9 @@ class PaginatorTest extends TestCase
         // Given
         $iterator = new ArrayIterator();
 
-        $this->ormPaginatorMock->shouldReceive('getQuery')
-            ->once()
-            ->andReturnSelf();
+        $ormPaginator = $this->mockOrmPaginator(1, 1, iterator: $iterator);
 
-        $this->ormPaginatorMock->shouldReceive('getFirstResult')
-            ->once()
-            ->andReturn(1);
-
-        $this->ormPaginatorMock->shouldReceive('getMaxResults')
-            ->once()
-            ->andReturn(1);
-
-        $this->ormPaginatorMock->shouldReceive('getIterator')
-            ->once()
-            ->andReturn($iterator);
-
-        $paginator = new DoctrinePaginator($this->ormPaginatorMock);
+        $paginator = new DoctrinePaginator($ormPaginator);
 
         // When
         $result = $paginator->getIterator();

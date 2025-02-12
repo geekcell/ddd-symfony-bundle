@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "doctrine/orm": "^2.20",
+        "doctrine/orm": "^2.20 | ^3.0",
         "geekcell/container-facade": "^1.0",
         "geekcell/ddd": "^1.6.0",
         "symfony/config": "^6.0 | ^7.0",
