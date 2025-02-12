@@ -21,8 +21,8 @@ jobs:
               env:
                   XDEBUG_MODE: coverage
               with:
-                  version: 9.6.5
-                  php_version: 8.2.3
+                  version: 11.5
+                  php_version: 8.3
                   configuration: phpunit.xml
                   php_extensions: "xdebug"
                   coverage_text: true
