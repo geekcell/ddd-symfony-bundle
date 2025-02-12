@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Maker;
 
+use Exception;
 use Assert\Assert;
 use GeekCell\Ddd\Contracts\Application\CommandBus;
 use GeekCell\Ddd\Contracts\Application\QueryBus;
@@ -26,7 +27,9 @@ use Symfony\Component\Console\Input\InputOption;
 final class MakeResource extends AbstractMaker implements InputAwareMakerInterface
 {
     public const NAMESPACE_PREFIX = 'Infrastructure\\ApiPlatform\\';
+
     public const CONFIG_PATH = 'config/packages/api_platform.yaml';
+
     public const CONFIG_PATH_XML = 'Infrastructure/ApiPlatform/Config';
 
     /**
@@ -60,11 +63,12 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
     private const API_PLATFORM_PROVIDER_INTERFACE = 'ApiPlatform\State\ProviderInterface';
 
     public const CONFIG_FLAVOR_ATTRIBUTE = 'attribute';
+
     public const CONFIG_FLAVOR_XML = 'xml';
 
     public function __construct(
-        private FileManager $fileManager,
-        private ApiPlatformConfigUpdater $configUpdater
+        private readonly FileManager $fileManager,
+        private readonly ApiPlatformConfigUpdater $configUpdater
     ) {
     }
 
@@ -175,7 +179,7 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
         );
 
         if (!class_exists($modelClassNameDetails->getFullName())) {
-            throw new RuntimeCommandException("Could not find model {$modelClassNameDetails->getFullName()}!");
+            throw new RuntimeCommandException(sprintf('Could not find model %s!', $modelClassNameDetails->getFullName()));
         }
 
         $identityClassNameDetails = $this->ensureIdentity($modelClassNameDetails, $generator, $pathGenerator);
@@ -257,11 +261,6 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
 
     /**
      * ensure custom resource path(s) are added to config
-     *
-     * @param Generator $generator
-     * @param PathGenerator $pathGenerator
-     * @param string $configFlavor
-     * @return void
      */
     private function ensureConfig(Generator $generator, PathGenerator $pathGenerator, string $configFlavor): void
     {
@@ -295,10 +294,7 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
     }
 
     /**
-     * @param ClassNameDetails $providerClassNameDetails
-     * @param Generator $generator
-     * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     private function generateProvider(ClassNameDetails $providerClassNameDetails, Generator $generator): void
     {
@@ -320,10 +316,7 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
     }
 
     /**
-     * @param ClassNameDetails $processorClassNameDetails
-     * @param Generator $generator
-     * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     private function generateProcessor(ClassNameDetails $processorClassNameDetails, Generator $generator): void
     {
@@ -344,12 +337,6 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
         $generator->writeChanges();
     }
 
-    /**
-     * @param ClassNameDetails $modelClassNameDetails
-     * @param Generator $generator
-     * @param PathGenerator $pathGenerator
-     * @return ClassNameDetails
-     */
     private function ensureIdentity(ClassNameDetails $modelClassNameDetails, Generator $generator, PathGenerator $pathGenerator): ClassNameDetails
     {
         $idEntity = $generator->createClassNameDetails(
@@ -372,6 +359,6 @@ final class MakeResource extends AbstractMaker implements InputAwareMakerInterfa
             return $uuidEntity;
         }
 
-        throw new RuntimeCommandException("Could not find model identity for {$modelClassNameDetails->getFullName()}. Checked for id class ({$idEntity->getFullName()}) and uuid class ({$uuidEntity->getFullName()})!");
+        throw new RuntimeCommandException(sprintf('Could not find model identity for %s. Checked for id class (%s) and uuid class (%s)!', $modelClassNameDetails->getFullName(), $idEntity->getFullName(), $uuidEntity->getFullName()));
     }
 }

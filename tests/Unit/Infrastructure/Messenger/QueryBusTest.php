@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Tests\Unit\Infrastructure\Messenger;
 
+use Exception;
 use GeekCell\Ddd\Contracts\Application\Query;
 use GeekCell\DddBundle\Infrastructure\Messenger\CommandBus;
 use GeekCell\DddBundle\Infrastructure\Messenger\QueryBus;
@@ -18,7 +19,7 @@ class TestQuery implements Query
 
 class ThrowingQueryHandler
 {
-    public function __construct(private readonly \Exception $exceptionToThrow)
+    public function __construct(private readonly Exception $exceptionToThrow)
     {
     }
 
@@ -32,7 +33,7 @@ class TestQueryHandler
 {
     public function __invoke(TestQuery $query): mixed
     {
-        return get_class($query);
+        return $query::class;
     }
 }
 
@@ -57,7 +58,7 @@ class QueryBusTest extends TestCase
     public function testDispatchFailsAndRethrowsException(): void
     {
         // Given
-        $expectedException = new \Exception('Not good enough');
+        $expectedException = new Exception('Not good enough');
         $bus = $this->createMessageBus(
             TestQuery::class,
             new ThrowingQueryHandler($expectedException)

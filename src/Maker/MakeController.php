@@ -22,14 +22,16 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+
 use function Symfony\Component\String\u;
 
 final class MakeController extends AbstractMaker implements InputAwareMakerInterface
 {
-    const NAMESPACE_PREFIX = 'Infrastructure\\Http\\Controller\\';
-    const CONFIG_PATH = 'config/routes/ddd.yaml';
+    public const NAMESPACE_PREFIX = 'Infrastructure\\Http\\Controller\\';
 
-    public function __construct(private FileManager $fileManager)
+    public const CONFIG_PATH = 'config/routes/ddd.yaml';
+
+    public function __construct(private readonly FileManager $fileManager)
     {
     }
 
@@ -144,7 +146,7 @@ final class MakeController extends AbstractMaker implements InputAwareMakerInter
             Response::class
         ];
 
-        $routeName = lcfirst($name);
+        $routeName = lcfirst((string) $name);
         $templateVars = [
             'route_name' => $routeName,
             'route_name_snake' => u($routeName)->snake()->lower(),

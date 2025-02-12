@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Maker;
 
+use InvalidArgumentException;
+use LogicException;
+use Exception;
 use Assert\Assert;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -41,17 +44,13 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
     /**
      * @var array<string|array<string, string>>
      */
-    private $classesToImport = [];
+    private array $classesToImport = [];
 
     /**
      * @var array<string, mixed>
      */
-    private $templateVariables = [];
+    private array $templateVariables = [];
 
-    /**
-     * @param DoctrineConfigUpdater $doctrineUpdater
-     * @param FileManager $fileManager
-     */
     public function __construct(
         private readonly DoctrineConfigUpdater $doctrineUpdater,
         private readonly FileManager $fileManager,
@@ -128,7 +127,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
      */
     public function configureDependencies(DependencyBuilder $dependencies, InputInterface $input = null): void
     {
-        if (null === $input || !$this->shouldGenerateEntity($input)) {
+        if (!$input instanceof InputInterface || !$this->shouldGenerateEntity($input)) {
             return;
         }
 
@@ -186,7 +185,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
                         'UUID representation (<fg=yellow>%sUuid</>)',
                         $modelName,
                     ),
-                    'n/a' => 'I\'ll take care later myself',
+                    'n/a' => "I'll take care later myself",
                 ],
             );
             $input->setOption('with-identity', $withIdentity);
@@ -202,7 +201,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
                 [
                     'attributes' => 'Yes, via PHP attributes',
                     'xml' => 'Yes, via XML mapping',
-                    'n/a' => 'No, I\'ll handle it separately',
+                    'n/a' => "No, I'll handle it separately",
                 ],
             );
             $input->setOption('entity', $asEntity);
@@ -247,12 +246,6 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
 
     /**
      * Optionally, generate the identity value object for the model.
-     *
-     * @param string $modelName
-     * @param InputInterface $input
-     * @param ConsoleStyle $io
-     * @param Generator $generator
-     * @return ClassNameDetails|null
      */
     private function generateIdentity(
         string $modelName,
@@ -272,7 +265,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         $identityClassNameDetails = $generator->createClassNameDetails(
             $modelName,
             $pathGenerator->namespacePrefix('Domain\\Model\\ValueObject\\Identity\\'),
-            ucfirst($identityType),
+            ucfirst((string) $identityType),
         );
 
         $extendsAlias = match ($identityType) {
@@ -288,7 +281,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         };
 
         if (!$extendsAlias || !$baseClass) {
-            throw new \InvalidArgumentException(sprintf('Unknown identity type "%s"', $identityType));
+            throw new InvalidArgumentException(sprintf('Unknown identity type "%s"', $identityType));
         }
 
         // @phpstan-ignore-next-line
@@ -315,7 +308,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         // 2. Generate custom Doctrine mapping type for the identity.
 
         $mappingTypeClassNameDetails = $generator->createClassNameDetails(
-            $modelName.ucfirst($identityType),
+            $modelName.ucfirst((string) $identityType),
             $pathGenerator->namespacePrefix('Infrastructure\\Doctrine\\DBAL\\Type\\'),
             'Type',
         );
@@ -327,7 +320,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
         };
 
         if (!$baseTypeClass) {
-            throw new \InvalidArgumentException(sprintf('Unknown identity type "%s"', $identityType));
+            throw new InvalidArgumentException(sprintf('Unknown identity type "%s"', $identityType));
         }
 
         $useStatements = new UseStatementGenerator([
@@ -342,7 +335,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
             [
                 'type_name' => $typeName,
                 'type_class' => $mappingTypeClassNameDetails->getShortName(),
-                'extends_type_class' => sprintf('Abstract%sType', ucfirst($identityType)),
+                'extends_type_class' => sprintf('Abstract%sType', ucfirst((string) $identityType)),
                 'identity_class' => $identityClassNameDetails->getShortName(),
                 'use_statements' => $useStatements,
             ],
@@ -375,12 +368,6 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
 
     /**
      * Optionally, generate entity mappings for the model.
-     *
-     * @param ClassNameDetails $modelClassNameDetails
-     * @param InputInterface $input
-     * @param ConsoleStyle $io
-     * @param Generator $generator
-     * @param PathGenerator $pathGenerator
      */
     private function generateEntityMappings(
         ClassNameDetails $modelClassNameDetails,
@@ -417,7 +404,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
             $tableName = u($modelClassNameDetails->getShortName())->before('Model')->snake()->toString();
             $hasIdentity = $this->shouldGenerateIdentity($input);
             if ($hasIdentity && !isset($this->templateVariables['type_name'])) {
-                throw new \LogicException(
+                throw new LogicException(
                     'Cannot generate entity XML mapping without identity type (which should have been generated).'
                 );
             }
@@ -463,10 +450,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
     /**
      * Generate model entity
      *
-     * @param ClassNameDetails $modelClassNameDetails
-     * @param InputInterface $input
-     * @param Generator $generator
-     * @throws \Exception
+     * @throws Exception
      */
     private function generateEntity(
         ClassNameDetails $modelClassNameDetails,
@@ -494,11 +478,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
     /**
      * Generate model repository
      *
-     * @param Generator $generator
-     * @param InputInterface $input
-     * @param ClassNameDetails $modelClassNameDetails
-     * @param ?ClassNameDetails $identityClassNameDetails
-     * @throws \Exception
+     * @throws Exception
      */
     private function generateRepository(
         Generator $generator,
@@ -561,11 +541,7 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
     /**
      * Generate model repository
      *
-     * @param Generator $generator
-     * @param ClassNameDetails $classNameDetails
-     * @param ClassNameDetails $modelClassNameDetails
-     * @param ?ClassNameDetails $identityClassNameDetails
-     * @throws \Exception
+     * @throws Exception
      */
     private function generateRepositoryInterface(
         Generator        $generator,
@@ -594,12 +570,8 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
     }
 
     // Helper methods
-
     /**
      * Returns whether the user wants to generate entity mappings as PHP attributes.
-     *
-     * @param InputInterface $input
-     * @return bool
      */
     private function shouldGenerateEntityAttributes(InputInterface $input): bool
     {
@@ -608,9 +580,6 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
 
     /**
      * Returns whether the user wants to generate entity mappings as XML.
-     *
-     * @param InputInterface $input
-     * @return bool
      */
     private function shouldGenerateEntityXml(InputInterface $input): bool
     {
@@ -619,23 +588,17 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
 
     /**
      * Returns whether the user wants to generate entity mappings.
-     *
-     * @param InputInterface $input
-     * @return bool
      */
     private function shouldGenerateEntity(InputInterface $input): bool
     {
-        return (
-            $this->shouldGenerateEntityAttributes($input) ||
-            $this->shouldGenerateEntityXml($input)
-        );
+        if ($this->shouldGenerateEntityAttributes($input)) {
+            return true;
+        }
+        return $this->shouldGenerateEntityXml($input);
     }
 
     /**
      * Returns whether the user wants to generate an identity value object for the model.
-     *
-     * @param InputInterface $input
-     * @return bool
      */
     private function shouldGenerateId(InputInterface $input): bool
     {
@@ -644,9 +607,6 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
 
     /**
      * Returns whether the user wants to generate a UUID value object for the model.
-     *
-     * @param InputInterface $input
-     * @return bool
      */
     private function shouldGenerateUuid(InputInterface $input): bool
     {
@@ -655,15 +615,12 @@ final class MakeModel extends AbstractMaker implements InputAwareMakerInterface
 
     /**
      * Returns whether the user wants to generate an identity value object for the model.
-     *
-     * @param InputInterface $input
-     * @return bool
      */
     private function shouldGenerateIdentity(InputInterface $input): bool
     {
-        return (
-            $this->shouldGenerateId($input) ||
-            $this->shouldGenerateUuid($input)
-        );
+        if ($this->shouldGenerateId($input)) {
+            return true;
+        }
+        return $this->shouldGenerateUuid($input);
     }
 }

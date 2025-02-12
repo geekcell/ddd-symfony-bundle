@@ -6,7 +6,7 @@ use function Symfony\Component\String\u;
 
 class PathGenerator
 {
-    private string $basePath;
+    private readonly string $basePath;
 
     public const DEFAULT_BASE_PATH = 'src/';
 
@@ -21,7 +21,7 @@ class PathGenerator
 
     public function namespacePrefix(string $namespacePrefix): string
     {
-        if ($this->basePath) {
+        if ($this->basePath !== '' && $this->basePath !== '0') {
             return $this->toNamespace($this->basePath) . $namespacePrefix;
         }
 
@@ -33,7 +33,7 @@ class PathGenerator
         $prefix = u($prefix)->trimSuffix('/');
         $suffix = u($suffix)->trimPrefix('/');
 
-        if ($this->basePath) {
+        if ($this->basePath !== '' && $this->basePath !== '0') {
             return $prefix . '/' . $this->basePath . $suffix;
         }
 

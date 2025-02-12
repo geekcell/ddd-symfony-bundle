@@ -13,7 +13,6 @@ abstract class AggregateRoot extends BaseAggregateRoot
     /**
      * Dispatches all events that have been recorded since the last commit.
      *
-     * @return void
      *
      * @throws AssertionFailedException
      */

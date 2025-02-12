@@ -2,14 +2,13 @@
 
 namespace GeekCell\DddBundle\Tests\Unit\Maker;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use GeekCell\DddBundle\Maker\PathGenerator;
 use PHPUnit\Framework\TestCase;
 
 class PathGeneratorTest extends TestCase
 {
-    /**
-     * @dataProvider provideNamespacePrefixData
-     */
+    #[DataProvider('provideNamespacePrefixData')]
     public function testNamespacePrefix(string $basePath, string $namespacePrefix, string $expected): void
     {
         $pathGenerator = new PathGenerator($basePath);
@@ -20,7 +19,7 @@ class PathGeneratorTest extends TestCase
     /**
      * @return array<int, string[]>
      */
-    public function provideNamespacePrefixData(): array
+    public static function provideNamespacePrefixData(): array
     {
         return [
             ['', 'Domain\\Model\\', 'Domain\\Model\\'],
@@ -31,9 +30,7 @@ class PathGeneratorTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider providePathData
-     */
+    #[DataProvider('providePathData')]
     public function testPath(string $basePath, string $prefix, string $suffix, string $expected): void
     {
         $pathGenerator = new PathGenerator($basePath);
@@ -44,7 +41,7 @@ class PathGeneratorTest extends TestCase
     /**
      * @return array<int, string[]>
      */
-    public function providePathData(): array
+    public static function providePathData(): array
     {
         return [
             ['', '%kernel.project_dir%/src', 'Domain/Model', '%kernel.project_dir%/src/Domain/Model'],

@@ -23,14 +23,14 @@ class QueryBus implements QueryBusInterface
     {
         try {
             return $this->handle($query);
-        } catch (HandlerFailedException $e) {
-            $exceptions = $e->getWrappedExceptions();
+        } catch (HandlerFailedException $handlerFailedException) {
+            $exceptions = $handlerFailedException->getWrappedExceptions();
             $first = array_shift($exceptions);
             if ($first) {
                 throw $first;
             }
 
-            throw $e;
+            throw $handlerFailedException;
         }
     }
 }

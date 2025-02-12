@@ -45,16 +45,6 @@ abstract class AbstractUuidType extends GuidType
         }
 
         $idType = $this->getIdType();
-        if (!is_subclass_of($idType, Uuid::class)) {
-            throw ConversionException::conversionFailedUnserialization(
-                $this->getName(),
-                sprintf(
-                    "'%s' must be a subclass of '%s'",
-                    $idType,
-                    Uuid::class,
-                ),
-            );
-        }
 
         return new $idType($value);
     }

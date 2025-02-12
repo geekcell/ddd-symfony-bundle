@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Tests\Integration\Fixtures;
 
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use GeekCell\DddBundle\GeekCellDddBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Kernel;
@@ -13,8 +15,8 @@ class TestKernel extends Kernel
     public function registerBundles(): iterable
     {
         return [
-            new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new \GeekCell\DddBundle\GeekCellDddBundle(),
+            new FrameworkBundle(),
+            new GeekCellDddBundle(),
         ];
     }
 

@@ -11,9 +11,9 @@
         }
     ],
     "require": {
-        "doctrine/orm": "^2.12",
+        "doctrine/orm": "^2.20",
         "geekcell/container-facade": "^1.0",
-        "geekcell/ddd": "^1.1.0",
+        "geekcell/ddd": "^1.6.0",
         "symfony/config": "^6.0 | ^7.0",
         "symfony/dependency-injection": "^6.0 | ^7.0",
         "symfony/event-dispatcher": "^6.0 | ^7.0",
@@ -22,16 +22,16 @@
         "symfony/string": "^6.0 | ^7.0"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.13",
-        "mockery/mockery": "^1.5",
-        "phpstan/phpstan": "^1.9",
-        "phpstan/phpstan-mockery": "^1.1",
-        "phpunit/phpunit": "^9.5",
-        "symfony/framework-bundle": "^6.0",
+        "friendsofphp/php-cs-fixer": "^3.68",
+        "mockery/mockery": "^1.6",
+        "phpstan/phpstan": "^2.0",
+        "phpstan/phpstan-mockery": "^2.0",
+        "phpstan/phpstan-beberlei-assert": "^2.0",
+        "phpunit/phpunit": "^11.0 | ^12.0",
+        "symfony/framework-bundle": "^6.0 | ^7.0",
         "symfony/yaml": "^6.0 | ^7.0",
         "symfony/filesystem": "^6.0 | ^7.0",
-        "symfony/maker-bundle": "^1.48",
-        "phpstan/phpstan-beberlei-assert": "^1.1"
+        "symfony/maker-bundle": "^1.62"
     },
     "autoload": {
         "psr-4": {

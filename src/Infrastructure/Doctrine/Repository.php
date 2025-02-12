@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Infrastructure\Doctrine;
 
+use ReflectionClass;
 use Assert\Assert;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -65,7 +66,7 @@ abstract class Repository implements RepositoryInterface
             function (QueryBuilder $queryBuilder) use (
                 $itemsPerPage,
                 $currentPage
-            ) {
+            ): void {
                 $queryBuilder
                     ->setFirstResult($itemsPerPage * ($currentPage - 1))->setMaxResults($itemsPerPage);
             }
@@ -96,8 +97,6 @@ abstract class Repository implements RepositoryInterface
      * Apply a filter to the repository by adding to the query builder.
      *
      * @param callable $filter  A callable that accepts a QueryBuilder
-     *
-     * @return static
      */
     public function filter(callable $filter): static
     {
@@ -116,12 +115,10 @@ abstract class Repository implements RepositoryInterface
      * Determine the entity alias.
      *
      * @param class-string $entityType
-     *
-     * @return string
      */
     protected function determineAlias(string $entityType): string
     {
-        $shortName = (new \ReflectionClass($entityType))->getShortName();
+        $shortName = (new ReflectionClass($entityType))->getShortName();
         return u($shortName)->camel()->snake()->toString();
     }
 }

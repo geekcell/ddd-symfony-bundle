@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Tests\Unit\Infrastructure\Doctrine;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use ArrayIterator;
 use Doctrine\ORM\Tools\Pagination\Paginator as OrmPaginator;
 use GeekCell\DddBundle\Infrastructure\Doctrine\Paginator as DoctrinePaginator;
 use Mockery;
@@ -14,21 +16,15 @@ class PaginatorTest extends TestCase
     /** @var OrmPaginator|Mockery\MockInterface */
     private mixed $ormPaginatorMock;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->ormPaginatorMock = Mockery::mock(OrmPaginator::class);
     }
 
-    /**
-     * @dataProvider provideCurrentPageData
-     *
-     * @param int $first
-     * @param int $max
-     * @param int $currentPage
-     */
-    public function testGetCurrentPage($first, $max, $currentPage): void
+    #[DataProvider('provideCurrentPageData')]
+    public function testGetCurrentPage(int $first, int $max, int $currentPage): void
     {
         // Given
         $this->ormPaginatorMock->shouldReceive('getQuery')
@@ -52,15 +48,8 @@ class PaginatorTest extends TestCase
         $this->assertEquals($currentPage, $result);
     }
 
-    /**
-     * @dataProvider provideTotalPagesData
-     *
-     * @param int $first
-     * @param int $max
-     * @param int $count
-     * @param int $total
-     */
-    public function testGetTotalPages($first, $max, $count, $total): void
+    #[DataProvider('provideTotalPagesData')]
+    public function testGetTotalPages(int $first, int $max, int $count, int $total): void
     {
         // Given
         $this->ormPaginatorMock->shouldReceive('getQuery')
@@ -147,7 +136,7 @@ class PaginatorTest extends TestCase
     public function testGetIterator(): void
     {
         // Given
-        $iterator = new \ArrayIterator();
+        $iterator = new ArrayIterator();
 
         $this->ormPaginatorMock->shouldReceive('getQuery')
             ->once()
@@ -177,7 +166,7 @@ class PaginatorTest extends TestCase
     /**
      * @return array<int, array<int, int>>
      */
-    public function provideCurrentPageData(): array
+    public static function provideCurrentPageData(): array
     {
         return [
             [0, 1, 1],
@@ -192,7 +181,7 @@ class PaginatorTest extends TestCase
     /**
      * @return array<int, array<int, int>>
      */
-    public function provideTotalPagesData(): array
+    public static function provideTotalPagesData(): array
     {
         return [
             [0, 1, 10, 10],

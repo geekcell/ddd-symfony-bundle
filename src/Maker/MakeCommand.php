@@ -11,7 +11,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 final class MakeCommand extends AbstractBaseMakerCQRS
 {
-    const TARGET = 'command';
+    public const TARGET = 'command';
 
     /**
      * @inheritDoc
@@ -32,7 +32,7 @@ final class MakeCommand extends AbstractBaseMakerCQRS
     /**
      * @inheritDoc
      */
-    function getTarget(): string
+    public function getTarget(): string
     {
         return self::TARGET;
     }
@@ -40,7 +40,7 @@ final class MakeCommand extends AbstractBaseMakerCQRS
     /**
      * @inheritDoc
      */
-    function getEntityUseStatements(): array
+    public function getEntityUseStatements(): array
     {
         return [
             Command::class
@@ -50,7 +50,7 @@ final class MakeCommand extends AbstractBaseMakerCQRS
     /**
      * @inheritDoc
      */
-    function getEntityHandlerUseStatements(): array
+    public function getEntityHandlerUseStatements(): array
     {
         return [
             CommandHandler::class,

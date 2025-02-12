@@ -23,17 +23,19 @@ class AggregateRootTest extends KernelTestCase
         return new TestKernel('test', true);
     }
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         self::bootKernel(['debug' => false]);
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         parent::tearDown();
         self::ensureKernelShutdown();
         Facade::clear();
+        // something in this test sets an exception handler and phpunit will fail because it's not restored
+        restore_exception_handler();
     }
 
     public function testDomainEvents(): void
@@ -47,14 +49,14 @@ class AggregateRootTest extends KernelTestCase
         $eventDispatcher = $container->get('event_dispatcher');
         $eventDispatcher->addListener(
             UserUpdatedEvent::class,
-            function ($event) use (&$numEventsDispatched) {
+            function ($event) use (&$numEventsDispatched): void {
                 $this->assertInstanceOf(UserUpdatedEvent::class, $event);
                 $numEventsDispatched++;
             }
         );
         $eventDispatcher->addListener(
             UserStateChangedEvent::class,
-            function ($event) use (&$numEventsDispatched) {
+            function ($event) use (&$numEventsDispatched): void {
                 $this->assertInstanceOf(UserStateChangedEvent::class, $event);
                 $numEventsDispatched++;
             }
