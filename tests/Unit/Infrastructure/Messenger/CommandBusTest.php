@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Tests\Unit\Infrastructure\Messenger;
 
+use Exception;
 use GeekCell\Ddd\Contracts\Application\Command;
 use GeekCell\DddBundle\Infrastructure\Messenger\CommandBus;
 use PHPUnit\Framework\TestCase;
@@ -19,13 +20,13 @@ class TestCommandHandler
 {
     public function __invoke(TestCommand $command): mixed
     {
-        return get_class($command);
+        return $command::class;
     }
 }
 
 class ThrowingCommandHandler
 {
-    public function __construct(private readonly \Exception $exceptionToThrow)
+    public function __construct(private readonly Exception $exceptionToThrow)
     {
     }
 
@@ -56,7 +57,7 @@ class CommandBusTest extends TestCase
     public function testDispatchFailsAndRethrowsException(): void
     {
         // Given
-        $expectedException = new \Exception('Not good enough');
+        $expectedException = new Exception('Not good enough');
         $bus = $this->createMessageBus(
             TestCommand::class,
             new ThrowingCommandHandler($expectedException)

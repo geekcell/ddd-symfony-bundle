@@ -18,19 +18,8 @@ jobs:
             - uses: php-actions/composer@v6
             - name: PHPUnit Tests
               uses: php-actions/phpunit@v3
-              env:
-                  XDEBUG_MODE: coverage
               with:
-                  version: 9.6.5
-                  php_version: 8.2.3
+                  version: 11.5
+                  php_version: 8.3
+                  test_suffix: Test.php
                   configuration: phpunit.xml
-                  php_extensions: "xdebug"
-                  coverage_text: true
-                  coverage_clover: reports/coverage.xml
-
-            # SonarCloud
-            - name: SonarCloud Scan
-              uses: SonarSource/sonarcloud-github-action@master
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

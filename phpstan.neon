@@ -4,7 +4,8 @@ includes:
 
 parameters:
     level: max
-    checkGenericClassInNonGenericObjectType: false
+    ignoreErrors:
+        - identifier: missingType.generics
     paths:
         - src
         - tests

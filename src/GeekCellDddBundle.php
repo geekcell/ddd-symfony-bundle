@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Assert\Assert;
 use GeekCell\DddBundle\DependencyInjection\GeekCellDddExtension;
 use GeekCell\Facade\Facade;
@@ -33,7 +34,7 @@ class GeekCellDddBundle extends Bundle
     {
         parent::boot();
 
-        if ($this->container !== null) {
+        if ($this->container instanceof ContainerInterface) {
             Facade::setContainer($this->container);
         }
     }

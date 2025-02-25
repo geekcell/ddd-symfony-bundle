@@ -20,12 +20,9 @@ class DispatchableTraitTest extends TestCase
      */
     public const SERVICE_ID = 'event_dispatcher';
 
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
+    private Container $container;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -33,7 +30,7 @@ class DispatchableTraitTest extends TestCase
         EventDispatcherFacade::setContainer($this->container);
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         parent::tearDown();
         EventDispatcherFacade::clear();

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Maker\Doctrine;
 
+use Assert\Assertion;
 use Assert;
 use GeekCell\DddBundle\Maker\AbstractBaseConfigUpdater;
 
@@ -21,7 +22,6 @@ class DoctrineConfigUpdater extends AbstractBaseConfigUpdater
     public function addCustomDBALMappingType(string $yamlSource, string $identifier, string $mappingClass): string
     {
         $data = $this->read($yamlSource);
-        /** @phpstan-ignore-next-line */
         if (isset($data['doctrine']['dbal']['types']) && is_array($data['doctrine']['dbal']['types'])) {
             $data['doctrine']['dbal']['types'][$identifier] = $mappingClass;
         }
@@ -40,7 +40,7 @@ class DoctrineConfigUpdater extends AbstractBaseConfigUpdater
      */
     public function updateORMDefaultEntityMapping(string $yamlSource, string $mappingType, string $directory): string
     {
-        Assert\Assertion::inArray($mappingType, ['xml', 'attribute'], 'Invalid mapping type: %s');
+        Assertion::inArray($mappingType, ['xml', 'attribute'], 'Invalid mapping type: %s');
 
         $data = $this->read($yamlSource);
         $config = [
@@ -51,7 +51,6 @@ class DoctrineConfigUpdater extends AbstractBaseConfigUpdater
             'is_bundle' =>  false,
         ];
 
-        /** @phpstan-ignore-next-line */
         if (isset($data['doctrine']['orm']['mappings']['App']) && is_array($data['doctrine']['orm']['mappings']['App'])) {
             $data['doctrine']['orm']['mappings']['App'] = $config;
         }

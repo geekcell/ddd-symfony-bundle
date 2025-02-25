@@ -11,7 +11,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 final class MakeQuery extends AbstractBaseMakerCQRS
 {
-    const TARGET = 'query';
+    public const TARGET = 'query';
 
     /**
      * @inheritDoc
@@ -32,7 +32,7 @@ final class MakeQuery extends AbstractBaseMakerCQRS
     /**
      * @inheritDoc
      */
-    function getTarget(): string
+    public function getTarget(): string
     {
         return self::TARGET;
     }
@@ -40,7 +40,7 @@ final class MakeQuery extends AbstractBaseMakerCQRS
     /**
      * @inheritDoc
      */
-    function getEntityUseStatements(): array
+    public function getEntityUseStatements(): array
     {
         return [
             Query::class
@@ -50,7 +50,7 @@ final class MakeQuery extends AbstractBaseMakerCQRS
     /**
      * @inheritDoc
      */
-    function getEntityHandlerUseStatements(): array
+    public function getEntityHandlerUseStatements(): array
     {
         return [
             QueryHandler::class,

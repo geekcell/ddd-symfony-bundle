@@ -29,10 +29,8 @@ class Paginator implements PaginatorInterface
         $firstResult = $query->getFirstResult();
         $maxResults = $query->getMaxResults();
 
-        Assert::that($firstResult)->notNull('First result is not set');
         Assert::that($maxResults)->notNull('Max results is not set');
 
-        /** @var int $firstResult */
         $this->firstResult = $firstResult;
 
         /** @var int $maxResults */

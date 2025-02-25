@@ -21,24 +21,26 @@ class AggregateRootTest extends TestCase
         // Given
         $testDomain = new TestDomain();
 
-        $dispatcherMock = $this
-            ->createMock(EventDispatcherInterface::class);
+        /** @var EventDispatcherInterface&MockObject $dispatcherMock */
+        $dispatcherMock = $this->createMock(EventDispatcherInterface::class);
 
-        /** @var EventDispatcherInterface $dispatcherMock */
         $testDomain->setEventDispatcher($dispatcherMock);
 
         $event1 = $this->createDomainEvent('some-event');
         $event2 = $this->createDomainEvent('some-other-event');
         $event3 = $this->createDomainEvent('and-another-event');
 
+        $expectedEvents = [$event1, $event2, $event3];
+
+        $nthEvent = 0;
         /** @var MockObject $dispatcherMock */
         $dispatcherMock
             ->expects($this->exactly(3))
             ->method('dispatch')
-            ->withConsecutive(
-                [$event1],
-                [$event2],
-                [$event3],
+            ->with(
+                $this->callback(function (DomainEvent $event) use ($expectedEvents, &$nthEvent) {
+                    return $expectedEvents[$nthEvent++] === $event;
+                })
             );
 
         // When
@@ -53,15 +55,15 @@ class AggregateRootTest extends TestCase
         // Given
         $testDomain = new TestDomain();
 
-        $dispatcherMock = $this
-            ->createMock(EventDispatcherInterface::class);
-
         $event1 = $this->createDomainEvent('some-event');
         $event2 = $this->createDomainEvent('some-other-event');
         $event3 = $this->createDomainEvent('and-another-event');
 
-        /** @var EventDispatcherInterface $dispatcherMock */
+        /** @var EventDispatcherInterface&MockObject $dispatcherMock */
+        $dispatcherMock = $this->createMock(EventDispatcherInterface::class);
+
         $testDomain->setEventDispatcher($dispatcherMock);
+
 
         /** @var MockObject $dispatcherMock */
         $dispatcherMock
@@ -79,10 +81,9 @@ class AggregateRootTest extends TestCase
         // Given
         $testDomain = new TestDomain();
 
-        $dispatcherMock = $this
-            ->createMock(EventDispatcherInterface::class);
+        /** @var EventDispatcherInterface&MockObject $dispatcherMock */
+        $dispatcherMock = $this->createMock(EventDispatcherInterface::class);
 
-        /** @var EventDispatcherInterface $dispatcherMock */
         $testDomain->setEventDispatcher($dispatcherMock);
 
         $event = $this->createDomainEvent('some-event');
@@ -101,16 +102,14 @@ class AggregateRootTest extends TestCase
      * Helper method to create an event instance that implements the
      * DomainEvent interface.
      *
-     * @param string $name  The name of the event.
-     *
-     * @return DomainEvent
+     * @param string $name The name of the event.
      */
     private function createDomainEvent(
         string $name
     ): DomainEvent {
         return new class ($name) implements DomainEvent {
             public function __construct(
-                private string $name,
+                private readonly string $name,
             ) {
             }
 

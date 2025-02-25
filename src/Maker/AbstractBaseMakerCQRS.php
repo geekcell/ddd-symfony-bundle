@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GeekCell\DddBundle\Maker;
 
+use Exception;
 use Assert\Assert;
 use Symfony\Bundle\MakerBundle\InputConfiguration;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
@@ -22,35 +23,27 @@ abstract class AbstractBaseMakerCQRS extends AbstractMaker implements InputAware
 {
     /**
      * Should return the target for the extending command (query|command)
-     * @return string
      */
-    abstract function getTarget(): string;
+    abstract public function getTarget(): string;
 
     /**
      * Should return an array of classes to import when generating the entity
      * @return string[]
      */
-    abstract function getEntityUseStatements(): array;
+    abstract public function getEntityUseStatements(): array;
 
     /**
      * Should return an array of classes to import when generating the entity handler
      * @return string[]
      */
-    abstract function getEntityHandlerUseStatements(): array;
+    abstract public function getEntityHandlerUseStatements(): array;
 
-    /**
-     * @return string
-     */
-    function getClassSuffix(): string
+    public function getClassSuffix(): string
     {
         return ucfirst($this->getTarget());
     }
 
-    /**
-     * @param PathGenerator $pathGenerator
-     * @return string
-     */
-    function getNamespacePrefix(PathGenerator $pathGenerator): string
+    public function getNamespacePrefix(PathGenerator $pathGenerator): string
     {
         return $pathGenerator->namespacePrefix('Application\\' . $this->getClassSuffix() . '\\');
     }
@@ -121,10 +114,7 @@ abstract class AbstractBaseMakerCQRS extends AbstractMaker implements InputAware
     }
 
     /**
-     * @param ClassNameDetails $queryClassNameDetails
-     * @param Generator $generator
-     * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     private function generateEntity(ClassNameDetails $queryClassNameDetails, Generator $generator): void
     {
@@ -132,7 +122,7 @@ abstract class AbstractBaseMakerCQRS extends AbstractMaker implements InputAware
             'use_statements' => new UseStatementGenerator($this->getEntityUseStatements()),
         ];
 
-        $templatePath = __DIR__."/../Resources/skeleton/{$this->getTarget()}/{$this->getClassSuffix()}.tpl.php";
+        $templatePath = __DIR__.sprintf('/../Resources/skeleton/%s/%s.tpl.php', $this->getTarget(), $this->getClassSuffix());
         $generator->generateClass(
             $queryClassNameDetails->getFullName(),
             $templatePath,
@@ -143,17 +133,13 @@ abstract class AbstractBaseMakerCQRS extends AbstractMaker implements InputAware
     }
 
     /**
-     * @param ClassNameDetails $queryClassNameDetails
-     * @param Generator $generator
-     * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     private function generateHandler(
         ClassNameDetails $queryClassNameDetails,
         Generator $generator,
         PathGenerator $pathGenerator
-    ): void
-    {
+    ): void {
         $classNameDetails = $generator->createClassNameDetails(
             $queryClassNameDetails->getShortName(),
             $this->getNamespacePrefix($pathGenerator),
@@ -165,7 +151,7 @@ abstract class AbstractBaseMakerCQRS extends AbstractMaker implements InputAware
             'query_class_name' => $queryClassNameDetails->getShortName()
         ];
 
-        $templatePath = __DIR__."/../Resources/skeleton/{$this->getTarget()}/{$this->getClassSuffix()}Handler.tpl.php";
+        $templatePath = __DIR__.sprintf('/../Resources/skeleton/%s/%sHandler.tpl.php', $this->getTarget(), $this->getClassSuffix());
         $generator->generateClass(
             $classNameDetails->getFullName(),
             $templatePath,

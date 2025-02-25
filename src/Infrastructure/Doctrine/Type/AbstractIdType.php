@@ -39,16 +39,6 @@ abstract class AbstractIdType extends IntegerType
         }
 
         $idType = $this->getIdType();
-        if (!is_subclass_of($idType, Id::class)) {
-            throw ConversionException::conversionFailedUnserialization(
-                $this->getName(),
-                sprintf(
-                    "'%s' must be a subclass of '%s'",
-                    $idType,
-                    Id::class,
-                ),
-            );
-        }
 
         return new $idType($value);
     }

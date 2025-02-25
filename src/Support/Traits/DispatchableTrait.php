@@ -19,7 +19,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 trait DispatchableTrait
 {
-    /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface|null */
     private ?EventDispatcherInterface $eventDispatcher;
 
     /**
@@ -33,7 +32,6 @@ trait DispatchableTrait
 
     /**
      * @codeCoverageIgnore
-     * @param EventDispatcherInterface $eventDispatcher
      */
     public function setEventDispatcher(
         EventDispatcherInterface $eventDispatcher
@@ -42,7 +40,6 @@ trait DispatchableTrait
     }
 
     /**
-     * @return EventDispatcherInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
