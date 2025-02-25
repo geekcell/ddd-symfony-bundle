@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.3](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.4.2...v1.4.3) (2025-02-25)
+
+
+### Miscellaneous Chores
+
+* change CODEOWNER to ckappen ([3a681b3](https://github.com/geekcell/ddd-symfony-bundle/commit/3a681b3a55a51c5cb419b0914459e23254a34a71))
+
 ## [1.4.2](https://github.com/geekcell/ddd-symfony-bundle/compare/v1.4.1...v1.4.2) (2023-12-20)
 
 
